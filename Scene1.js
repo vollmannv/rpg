@@ -41,7 +41,7 @@ class Scene1 extends Phaser.Scene {
         gameState.score = 0;
         gameState.lives = 2;
         gameState.currentLevel = 1;
-        gameState.skeletonsLeft = 21;
+        gameState.skeletonsLeft = 31;
         gameState.scoreText = this.add.text(10, 10, ``, { fontSize: '20px', fill: '#00000', fontWeight: '700', fontFamily: 'Arial Black' });
         gameState.scoreText.setScrollFactor(0);
 
