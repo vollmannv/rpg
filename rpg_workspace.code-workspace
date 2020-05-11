@@ -1,0 +1,11 @@
+{
+	"folders": [
+		{
+			"name": "rpg",
+			"path": "."
+		}
+	],
+	"settings": {
+		"liveServer.settings.multiRootWorkspaceName": "sudoku"
+	}
+}
