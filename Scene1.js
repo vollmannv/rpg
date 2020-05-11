@@ -34,6 +34,13 @@ class Scene1 extends Phaser.Scene {
         this.load.image('terrain', 'maps/assets/overworld.png');
         this.load.tilemapTiledJSON('startingMap', 'maps/starting_map.json');
 
+        //loads player with shoes (for second level)
+        this.load.spritesheet('playerShoes', 'sprites/player_shoes.png', {frameWidth: 64, frameHeight: 64});
+        this.load.spritesheet('playerShoesHurt', 'sprites/player_hurt_shoes.png', {frameWidth: 64, frameHeight: 64});
+
+        //loads tilemap (for second level)
+        this.load.tilemapTiledJSON('secondLevel', 'maps/level2.json');
+
     }
 
     create() {
@@ -81,7 +88,7 @@ class Scene1 extends Phaser.Scene {
             frameRate: 10,
             frames: this.anims.generateFrameNames('shuriken', {start: 0, end: 2})
         });
-        
+
         //creates skeleton animations
         this.anims.create({
             key: 'skeletonLeft',
