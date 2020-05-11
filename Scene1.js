@@ -17,6 +17,7 @@ class Scene1 extends Phaser.Scene {
 
     preload() {
 
+        //loads all spritesheets
         this.load.spritesheet('player', 'sprites/player_body.png', {frameWidth: 64, frameHeight: 64});
         this.load.spritesheet('skeleton', 'sprites/skeleton_body.png', {frameWidth: 64, frameHeight: 64});
         this.load.spritesheet('playerHurt', 'sprites/player_hurt.png', {frameWidth: 64, frameHeight: 64});
@@ -25,58 +26,19 @@ class Scene1 extends Phaser.Scene {
         this.load.spritesheet('shuriken', 'sprites/throwingstars.png', {frameWidth: 12, frameHeight: 12});
         this.load.spritesheet('hearts', 'sprites/hearts.png', {frameWidth: 121, frameHeight: 38})
 
+        //loadsSingleImages
         this.load.image('singleHeart', 'sprites/single_heart.png');
-
-        this.load.image('bg', 'images/bg.jpg');
         this.load.image('dialog', 'images/dialog_box.png');
 
+        //loads tilemap
         this.load.image('terrain', 'maps/assets/overworld.png');
         this.load.tilemapTiledJSON('startingMap', 'maps/starting_map.json');
 
     }
 
     create() {
-
-        this.physics.world.setBounds(0, 0, 1920, 1920);
-        gameState.score = 0;
-        gameState.lives = 2;
-        gameState.currentLevel = 1;
-        gameState.skeletonsLeft = 31;
-        gameState.scoreText = this.add.text(10, 10, ``, { fontSize: '20px', fill: '#00000', fontWeight: '700', fontFamily: 'Arial Black' });
-        gameState.scoreText.setScrollFactor(0);
-
-        this.input.on('pointerup', () => {
-            if (gameState.active === false) {
-                this.scene.restart();
-                gameState.active = true;
-            }
-        })
         
-        gameState.hearts = this.add.sprite(70, 470, 'hearts', 0);
-        gameState.hearts.setScrollFactor(0);
-
-        gameState.player = this.physics.add.sprite(150, 140, 'player', 18).setScale(.7);
-        this.cameras.main.setBounds(0,0,1920,1920)
-        this.cameras.main.startFollow(gameState.player, 480, 320);
-        
-
-        this.time.addEvent({
-            delay: 1000,
-            callback: delayDone,
-            callbackScope: this,
-            loop: false
-        });
-
-        gameState.shuriken = this.physics.add.group();
-        gameState.shuriken.maxSize = 0;
-
-        function delayDone () {
-            gameState.player.body.setSize(33, 50);
-            gameState.player.body.setOffset(16, 12);
-        }
-
-        gameState.player.setCollideWorldBounds(true);
-
+        //creates player animations
         this.anims.create({
             key: 'walkDown',
             repeat: -1,
@@ -119,7 +81,8 @@ class Scene1 extends Phaser.Scene {
             frameRate: 10,
             frames: this.anims.generateFrameNames('shuriken', {start: 0, end: 2})
         });
-
+        
+        //creates skeleton animations
         this.anims.create({
             key: 'skeletonLeft',
             repeat: -1,
@@ -156,10 +119,48 @@ class Scene1 extends Phaser.Scene {
             frameRate: 10,
             frames: this.anims.generateFrameNames('fireball', {start: 32, end: 39})
         });
-
+        
+        //setup
+        this.physics.world.setBounds(0, 0, 1920, 1920);
+        gameState.score = 0;
+        gameState.lives = 2;
+        gameState.currentLevel = 1;
+        gameState.skeletonsLeft = 31;
+        gameState.scoreText = this.add.text(10, 10, ``, { fontSize: '20px', fill: '#00000', fontWeight: '700', fontFamily: 'Arial Black' });
+        gameState.scoreText.setScrollFactor(0);
         gameState.cursors = this.input.keyboard.createCursorKeys();
 
+        //adds GUI
+        gameState.hearts = this.add.sprite(70, 470, 'hearts', 0);
+        gameState.hearts.setScrollFactor(0);
+
+        //adds player
+        gameState.player = this.physics.add.sprite(150, 140, 'player', 18).setScale(.7);
+
+        //player camera and worldbounds setup
+        this.cameras.main.setBounds(0,0,1920,1920)
+        this.cameras.main.startFollow(gameState.player, 480, 320);
+        gameState.player.setCollideWorldBounds(true);
+
+        //adds different physics groups
+        gameState.shuriken = this.physics.add.group();
+        gameState.shuriken.maxSize = 0;
         gameState.skeletons = this.physics.add.group();
+        gameState.skeletonAttack = this.physics.add.group();
+        
+        //fixes player bounding box error
+        this.time.addEvent({
+            delay: 1000,
+            callback: delayDone,
+            callbackScope: this,
+            loop: false
+        });
+        function delayDone () {
+            gameState.player.body.setSize(33, 50);
+            gameState.player.body.setOffset(16, 12);
+        }
+
+        //generates skeletons
         function skeletonGen() {
             if (gameState.positionReached) {
                 const xCoord = Math.random() * 1920;
@@ -172,26 +173,6 @@ class Scene1 extends Phaser.Scene {
                 }
             }
         }   
-        
-        this.add.image(422, 80, 'dialog').setScale(.6);
-        this.add.text(320, 60, "Welcome to my game!!\nYou can walk with the arrow keys\nTo shoot a shuriken, press the Space bar\nDoesn't work? Try picking up this one!", { fontSize: '8px', fill: '#00000', fontWeight: '700', fontFamily: 'Arial Black', fontAlign: 'center' })
-        gameState.shurikenDrop = this.physics.add.group();
-        const startingShuriken = gameState.shurikenDrop.create(423, 147, 'shuriken', 0).setScale(2);
-        startingShuriken.play('shuriken');
-
-        this.add.image(950, 143, 'dialog').setScale(.7);
-        this.add.text(830, 122, "You can hide behind rocks. Why? Wait to find out!\nYou may have noticed the hearts on the bottom left.\nThe red hearts are your HP.\nPick up the heart and see what happens.", { fontSize: '8px', fill: '#00000', fontWeight: '700', fontFamily: 'Arial Black', fontAlign: 'center' })
-        this.add.text
-        gameState.singleHearts = this.physics.add.group();
-        gameState.singleHearts.create(945, 69, 'singleHeart', 0).setScale(.8);
-
-        this.add.image(820, 475, 'dialog').setScale(.6);
-        this.add.text(714, 455, "This is a skeleton.They have taken over the land!\nDon't get too close, you will lose a heart.\nTry shooting it with your shuriken...\nSometimes they drop valuable items.", { fontSize: '8px', fill: '#00000', fontWeight: '700', fontFamily: 'Arial Black', fontAlign: 'center' })
-        gameState.skeletons.create(792, 408, 'skeleton', 18).setScale(.55);
-
-        this.add.image(565, 620, 'dialog').setScale(.5);
-        this.add.text(476, 600, "You are now ready for your first Level!\nGo further down.\nThe skeletons will appear.\nOh yeah, they shoot fireballs!", { fontSize: '8px', fill: '#00000', fontWeight: '700', fontFamily: 'Arial Black', fontAlign: 'center' });
-
         gameState.skeletonGenLoop = this.time.addEvent({
             delay: 2000,
             callback: skeletonGen,
@@ -199,13 +180,13 @@ class Scene1 extends Phaser.Scene {
             loop: true
         });
 
+        //updates score every second
         gameState.scoreTextEvent = this.time.addEvent({
             delay: 1000,
             callback: updateScore,
             callbackScope: this,
             loop: true
         });
-
         function updateScore() {
             if (gameState.positionReached) {
                 gameState.score++;
@@ -213,27 +194,45 @@ class Scene1 extends Phaser.Scene {
             }
         }
 
-
+        //adds dialogue boxes
+        this.add.image(422, 80, 'dialog').setScale(.6);
+        this.add.text(320, 60, "Welcome to my game!!\nYou can walk with the arrow keys\nTo shoot a shuriken, press the Space bar\nDoesn't work? Try picking up this one!", { fontSize: '8px', fill: '#00000', fontWeight: '700', fontFamily: 'Arial Black', fontAlign: 'center' })
+        gameState.shurikenDrop = this.physics.add.group();
+        const startingShuriken = gameState.shurikenDrop.create(423, 147, 'shuriken', 0).setScale(2);
+        startingShuriken.play('shuriken');
+        
+        this.add.image(950, 143, 'dialog').setScale(.7);
+        this.add.text(830, 122, "You can hide behind rocks. Why? Wait to find out!\nYou may have noticed the hearts on the bottom left.\nThe red hearts are your HP.\nPick up the heart and see what happens.", { fontSize: '8px', fill: '#00000', fontWeight: '700', fontFamily: 'Arial Black', fontAlign: 'center' })
+        this.add.text
+        gameState.singleHearts = this.physics.add.group();
+        gameState.singleHearts.create(945, 69, 'singleHeart', 0).setScale(.8);
+        
+        this.add.image(820, 475, 'dialog').setScale(.6);
+        this.add.text(714, 455, "This is a skeleton.They have taken over the land!\nDon't get too close, you will lose a heart.\nTry shooting it with your shuriken...\nSometimes they drop valuable items.", { fontSize: '8px', fill: '#00000', fontWeight: '700', fontFamily: 'Arial Black', fontAlign: 'center' })
+        gameState.skeletons.create(792, 408, 'skeleton', 18).setScale(.55);
+        
+        this.add.image(565, 620, 'dialog').setScale(.5);
+        this.add.text(476, 600, "You are now ready for your first Level!\nGo further down.\nThe skeletons will appear.\nOh yeah, they shoot fireballs!", { fontSize: '8px', fill: '#00000', fontWeight: '700', fontFamily: 'Arial Black', fontAlign: 'center' });
+        
+        //sets collisions
         this.physics.add.collider(gameState.player, gameState.skeletons, (player, skeleton) => {
             gameState.lives -= 1;
             skeleton.destroy();
             gameState.skeletonsLeft--;
             updateScore();
         });
-
-        gameState.skeletonAttack = this.physics.add.group();
-
+        
         this.physics.add.collider(gameState.player, gameState.skeletonAttack, (player, fireball) => {
             gameState.lives -= 1;
             fireball.destroy();
         });
-
+        
         this.physics.add.collider(gameState.skeletons, gameState.shuriken, (skeleton, shuriken) => {
             skeleton.destroy();
             shuriken.destroy();
-
+            
             gameState.score += 10;
-
+            
             const randomNumber = Math.floor(Math.random() * 10);
             if (gameState.lives < 3) {
                 if (randomNumber === 3) {
@@ -244,7 +243,7 @@ class Scene1 extends Phaser.Scene {
                 const newDrop = gameState.shurikenDrop.create(skeleton.x, skeleton.y, 'shuriken', 0).setScale(1.4);
                 newDrop.play('shuriken');
             }
-
+            
             gameState.skeletonsLeft--;
             updateScore();
         });
@@ -253,33 +252,43 @@ class Scene1 extends Phaser.Scene {
             singleHeart.destroy();
             gameState.lives++;
         });
-
+        
         this.physics.add.collider(gameState.player, gameState.shurikenDrop, (player, shuriken) => {
             gameState.shuriken.maxSize++;
             shuriken.destroy();
         });
 
+        //adds map to screen and sets map collisions
         gameState.startingMap = this.add.tilemap('startingMap', 16, 16, 60, 40);
         let terrain = gameState.startingMap.addTilesetImage('overworld', 'terrain');
-
+        
         gameState.botLayerStartingMap = gameState.startingMap.createStaticLayer('bottom', [terrain], 0, 0).setDepth(-1);
         gameState.topLayerStartingMap = gameState.startingMap.createStaticLayer('top', [terrain], 0, 0).setDepth(-1);
-
+        
         this.physics.add.collider(gameState.player, gameState.topLayerStartingMap);
         this.physics.add.collider(gameState.skeletons, gameState.topLayerStartingMap);
         this.physics.add.collider(gameState.skeletonAttack, gameState.topLayerStartingMap, (fireball) => {
             fireball.destroy();
         });
         gameState.topLayerStartingMap.setCollisionByProperty({collision: true});
-
+        
+        //restarts the game when lost and click on screen
+        this.input.on('pointerup', () => {
+            if (gameState.active === false) {
+                this.scene.restart();
+                gameState.active = true;
+            }
+        })
     }
-
+    
     update() {
-
+        
+        //starts skeletongen when certain position is reached
         if (gameState.player.body.y > gameState.startLoopPos) {
             gameState.positionReached = true;
         }
-    
+        
+        //makes player walk
         if (gameState.active === true) {
             if (gameState.cursors.down.isDown) {
                 gameState.player.play('walkDown', true);
@@ -305,10 +314,13 @@ class Scene1 extends Phaser.Scene {
                 gameState.player.setVelocityX(0);
             }
         }
+
+        //player idle when not moving
         if (gameState.player.body.velocity.x === 0 && gameState.player.body.velocity.y === 0) {
             gameState.player.play('idle', true)
         }
-    
+        
+        //shoots shuriken
         if (gameState.active) {
             if (Phaser.Input.Keyboard.JustDown(gameState.cursors.space) && gameState.shuriken.getLength() < gameState.shuriken.maxSize) {
                 
@@ -332,6 +344,7 @@ class Scene1 extends Phaser.Scene {
             }
         }
     
+        //destroys shuriken when out of camera
         gameState.shuriken.getChildren().forEach(shuriken => {
     
             shuriken.body.setSize(12,12);
@@ -351,13 +364,23 @@ class Scene1 extends Phaser.Scene {
                 shuriken.destroy();
             }
         })
-    
+        
+        //destroys hearts and fireballs on game over 
         gameState.singleHearts.getChildren().forEach(heart => {
             if (gameState.active === false) {
                 heart.destroy();
             }
         })
+        gameState.skeletonAttack.getChildren().forEach(fireball => {
+            fireball.body.setSize(58, 20);
+            fireball.body.setOffset(0,20);
     
+            if (gameState.active === false) {
+                fireball.destroy();
+            }
+        });
+        
+        //sets skeleton velocities, spawnpoints and animations, destroys on game over
         gameState.skeletons.getChildren().forEach(skeleton => {
     
             skeleton.body.setSize(30,50);
@@ -386,22 +409,12 @@ class Scene1 extends Phaser.Scene {
                     }
                 }
             }
-    
             if (gameState.active === false) {
                 skeleton.destroy();
             }
-    
         });
     
-        gameState.skeletonAttack.getChildren().forEach(fireball => {
-            fireball.body.setSize(58, 20);
-            fireball.body.setOffset(0,20);
-    
-            if (gameState.active === false) {
-                fireball.destroy();
-            }
-        });
-    
+        //what to do when level is won
         if (gameState.skeletonsLeft === 0 && gameState.currentLevel === 1) {
             this.physics.pause();
             gameState.skeletons.getChildren().forEach(skeleton => {
@@ -426,7 +439,8 @@ class Scene1 extends Phaser.Scene {
                 this.scene.start("Level2");
             });
         }
-    
+        
+        //what to do when level is lost
         if (gameState.lives === 3) {
             gameState.hearts.setTexture('hearts', 0);
         } else if (gameState.lives === 2) {
