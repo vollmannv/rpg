@@ -21,7 +21,10 @@ class Scene2 extends Phaser.Scene {
     }
 
     create() {
-        
+
+        //temp alert
+        alert(`Level not done yet, reload page!`);
+
         //creates player animations
         this.anims.create({
             key: 'walkDown',
