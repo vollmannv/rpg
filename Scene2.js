@@ -68,6 +68,24 @@ class Scene2 extends Phaser.Scene {
             frameRate: 10,
             frames: this.anims.generateFrameNames('shuriken', {start: 0, end: 2})
         });
+        this.anims.create({
+            key: 'playerShoesIdleLeft',
+            repeat: -1,
+            frameRate: 1,
+            frames: this.anims.generateFrameNames('playerShoes', {start: 9, end: 9})
+        });
+        this.anims.create({
+            key: 'playerShoesIdleRight',
+            repeat: -1,
+            frameRate: 1,
+            frames: this.anims.generateFrameNames('playerShoes', {start: 27, end: 27})
+        });
+        this.anims.create({
+            key: 'playerShoesIdleUp',
+            repeat: -1,
+            frameRate: 1,
+            frames: this.anims.generateFrameNames('playerShoes', {start: 0, end: 1})
+        });
 
         //creates skeleton animations
         this.anims.create({
