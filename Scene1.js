@@ -88,6 +88,24 @@ class Scene1 extends Phaser.Scene {
             frameRate: 10,
             frames: this.anims.generateFrameNames('shuriken', {start: 0, end: 2})
         });
+        this.anims.create({
+            key: 'playerIdleLeft',
+            repeat: -1,
+            frameRate: 1,
+            frames: this.anims.generateFrameNames('player', {start: 9, end: 9})
+        });
+        this.anims.create({
+            key: 'playerIdleRight',
+            repeat: -1,
+            frameRate: 1,
+            frames: this.anims.generateFrameNames('player', {start: 27, end: 27})
+        });
+        this.anims.create({
+            key: 'playerIdleUp',
+            repeat: -1,
+            frameRate: 1,
+            frames: this.anims.generateFrameNames('player', {start: 0, end: 1})
+        });
 
         //creates skeleton animations
         this.anims.create({
@@ -305,9 +323,7 @@ class Scene1 extends Phaser.Scene {
                 gameState.player.setVelocityY(-80);
                 gameState.player.play('walkUp', true);
                 gameState.player.setVelocityX(0);
-            } else {
-                gameState.player.setVelocityY(0);
-            }
+            } 
             
             if (gameState.cursors.left.isDown) {
                 gameState.player.setVelocityX(-80);
@@ -317,15 +333,38 @@ class Scene1 extends Phaser.Scene {
                 gameState.player.setVelocityX(80);
                 gameState.player.setVelocityY(0);
                 gameState.player.play('walkRight', true);
-            } else {
-                gameState.player.setVelocityX(0);
-            }
+            } 
         }
 
         //player idle when not moving
-        if (gameState.player.body.velocity.x === 0 && gameState.player.body.velocity.y === 0) {
-            gameState.player.play('idle', true)
+        if (gameState.cursors.left.isUp) {
+            if (gameState.player.body.velocity.x < 0) {
+                gameState.player.setVelocityX(-0.001);
+                gameState.player.play('playerIdleLeft', true);
+                gameState.player.setTexture('player', 9);
+            }
         }
+        if (gameState.cursors.right.isUp) {
+            if (gameState.player.body.velocity.x > 0) {
+                gameState.player.setVelocityX(0.001);
+                gameState.player.play('playerIdleRight', true);
+                gameState.player.setTexture('player', 27);
+            }
+        }
+        if (gameState.cursors.up.isUp) {
+            if (gameState.player.body.velocity.y < 0) {
+                gameState.player.setVelocityY(-0.001);
+                gameState.player.play('playerIdleUp', true);
+                gameState.player.setTexture('player', 1);
+            }
+        }
+        if (gameState.cursors.down.isUp) {
+            if (gameState.player.body.velocity.y > 0) {
+                gameState.player.setVelocityY(0);
+                gameState.player.play('idle', true);
+            }
+        }
+
         
         //shoots shuriken
         if (gameState.active) {
