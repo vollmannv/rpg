@@ -150,7 +150,7 @@ class Scene1 extends Phaser.Scene {
         gameState.score = 0;
         gameState.lives = 2;
         gameState.currentLevel = 1;
-        gameState.skeletonsLeft = 31;
+        gameState.skeletonsLeft = 11;
         gameState.scoreText = this.add.text(10, 10, ``, { fontSize: '20px', fill: '#00000', fontWeight: '700', fontFamily: 'Arial Black' });
         gameState.scoreText.setScrollFactor(0);
         gameState.cursors = this.input.keyboard.createCursorKeys();
@@ -161,17 +161,19 @@ class Scene1 extends Phaser.Scene {
 
         //adds player
         gameState.player = this.physics.add.sprite(150, 140, 'player', 18).setScale(.7);
-
+        
         //player camera and worldbounds setup
         this.cameras.main.setBounds(0,0,1920,1920)
         this.cameras.main.startFollow(gameState.player, 480, 320);
         gameState.player.setCollideWorldBounds(true);
-
+        
         //adds different physics groups
         gameState.shuriken = this.physics.add.group();
         gameState.shuriken.maxSize = 0;
         gameState.skeletons = this.physics.add.group();
         gameState.skeletonAttack = this.physics.add.group();
+        gameState.singleHearts = this.physics.add.group();
+        gameState.singleHearts.create(945, 69, 'singleHeart', 0).setScale(.8);
         
         //fixes player bounding box error
         this.time.addEvent({
@@ -184,7 +186,7 @@ class Scene1 extends Phaser.Scene {
             gameState.player.body.setSize(33, 50);
             gameState.player.body.setOffset(16, 12);
         }
-
+        
         //generates skeletons
         function skeletonGen() {
             if (gameState.positionReached) {
@@ -204,7 +206,7 @@ class Scene1 extends Phaser.Scene {
             callbackScope: this,
             loop: true
         });
-
+        
         //updates score every second
         gameState.scoreTextEvent = this.time.addEvent({
             delay: 1000,
@@ -218,7 +220,7 @@ class Scene1 extends Phaser.Scene {
                 gameState.scoreText.setText(`Score: ${gameState.score}\nLevel: ${gameState.currentLevel}\nSkeletons left: ${gameState.skeletonsLeft}`);
             }
         }
-
+        
         //adds dialogue boxes
         this.add.image(422, 80, 'dialog').setScale(.6);
         this.add.text(320, 60, "Welcome to my game!!\nYou can walk with the arrow keys\nTo shoot a shuriken, press the Space bar\nDoesn't work? Try picking up this one!", { fontSize: '8px', fill: '#00000', fontWeight: '700', fontFamily: 'Arial Black', fontAlign: 'center' })
@@ -229,8 +231,6 @@ class Scene1 extends Phaser.Scene {
         this.add.image(950, 143, 'dialog').setScale(.7);
         this.add.text(830, 122, "You can hide behind rocks. Why? Wait to find out!\nYou may have noticed the hearts on the bottom left.\nThe red hearts are your HP.\nPick up the heart and see what happens.", { fontSize: '8px', fill: '#00000', fontWeight: '700', fontFamily: 'Arial Black', fontAlign: 'center' })
         this.add.text
-        gameState.singleHearts = this.physics.add.group();
-        gameState.singleHearts.create(945, 69, 'singleHeart', 0).setScale(.8);
         
         this.add.image(820, 475, 'dialog').setScale(.6);
         this.add.text(714, 455, "This is a skeleton.They have taken over the land!\nDon't get too close, you will lose a heart.\nTry shooting it with your shuriken...\nSometimes they drop valuable items.", { fontSize: '8px', fill: '#00000', fontWeight: '700', fontFamily: 'Arial Black', fontAlign: 'center' })
@@ -260,11 +260,11 @@ class Scene1 extends Phaser.Scene {
             
             const randomNumber = Math.floor(Math.random() * 10);
             if (gameState.lives < 3) {
-                if (randomNumber === 3) {
+                if (randomNumber === 3 || randomNumber === 4) {
                     gameState.singleHearts.create(skeleton.x, skeleton.y, 'singleHeart').setScale(.35);
                 }
             }
-            if (randomNumber === 2) {
+            if (randomNumber === 2 || randomNumber === 1) {
                 const newDrop = gameState.shurikenDrop.create(skeleton.x, skeleton.y, 'shuriken', 0).setScale(1.4);
                 newDrop.play('shuriken');
             }
@@ -372,19 +372,19 @@ class Scene1 extends Phaser.Scene {
                 
                 let newShuriken = gameState.shuriken.create(gameState.player.x, gameState.player.y, 'shuriken', 0);
                 if (gameState.player.body.velocity.x > 0) {
-                    newShuriken.setVelocityX(100);
+                    newShuriken.setVelocityX(150);
                     newShuriken.play('shuriken', true);
                 } else if (gameState.player.body.velocity.x < 0) {
-                    newShuriken.setVelocityX(-100);
+                    newShuriken.setVelocityX(-150);
                     newShuriken.play('shuriken', true);
                 } else if (gameState.player.body.velocity.y > 0) {
-                    newShuriken.setVelocityY(100);
+                    newShuriken.setVelocityY(150);
                     newShuriken.play('shuriken', true);
                 } else if (gameState.player.body.velocity.y < 0) {
-                    newShuriken.setVelocityY(-100);
+                    newShuriken.setVelocityY(-150);
                     newShuriken.play('shuriken', true);
                 } else {
-                    newShuriken.setVelocityY(100);
+                    newShuriken.setVelocityY(150);
                     newShuriken.play('shuriken', true);
                 }
             }
