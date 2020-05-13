@@ -2,7 +2,8 @@ const gameState2 = {
     counter: 0,
     active: true,
     startLoopPos: 250,
-    positionReached: false
+    positionReached: false,
+    pauseOn: false
 };
 
 class Scene2 extends Phaser.Scene {
@@ -145,6 +146,7 @@ class Scene2 extends Phaser.Scene {
         gameState2.skeletonAttack = this.physics.add.group();
         gameState2.singleHearts = this.physics.add.group();
         gameState2.shurikenDrop = this.physics.add.group();
+        gameState2.pauseGroup = this.add.group();
 
         //adds GUI
         gameState2.hearts = this.add.sprite(70, 470, 'hearts', 0);
@@ -167,7 +169,7 @@ class Scene2 extends Phaser.Scene {
 
         //generates skeletons
         function skeletonGen() {
-            if (gameState2.positionReached) {
+            if (gameState2.positionReached && gameState2.pauseOn === false) {
                 const xCoord = Math.random() * 1280;
                 const yCoord = Math.random() * 1280;
                 const offsetX = Math.abs(xCoord - gameState2.player.body.x);
@@ -193,7 +195,7 @@ class Scene2 extends Phaser.Scene {
             loop: true
         });
         function updateScore() {
-            if (gameState2.positionReached) {
+            if (gameState2.positionReached && gameState2.pauseOn === false) {
                 gameState2.score++;
                 gameState2.scoreText.setText(`Score: ${gameState2.score}\nLevel: ${gameState2.currentLevel}\nSkeletons left: ${gameState2.skeletonsLeft}`);
             }
@@ -272,6 +274,34 @@ class Scene2 extends Phaser.Scene {
     }
 
     update () {
+
+        //adds escape input
+        gameState2.pause = this.input.keyboard.addKey(27);
+        gameState2.pause.on('down', () => {
+            this.physics.pause();
+            gameState2.pauseOn = true;
+            gameState2.pauseScreen = this.add.image(0,40, 'pauseMenu');
+            gameState2.pauseScreen.setOrigin(0,0);
+            gameState2.backButtonPause = this.add.image(570, 440, 'backButton').setScale(.3);
+            gameState2.backButtonPause.setOrigin(0,0);
+            gameState2.pauseGroup.add(gameState2.pauseScreen);
+            gameState2.pauseGroup.add(gameState2.backButtonPause);
+            gameState2.pauseGroup.getChildren().forEach(child => {
+                child.setScrollFactor(0);
+            });
+            gameState2.pauseScreen.setInteractive();
+            gameState2.backButtonPause.setInteractive();
+            gameState2.pauseScreen.on('pointerup', () => {
+                this.scene.start('Menu');
+            });
+        });
+        if (gameState2.pauseOn) {
+            gameState2.backButtonPause.on('pointerup', () => {
+                gameState2.pauseGroup.clear(true);
+                gameState2.pauseOn = false;
+                this.physics.resume();
+            });
+        }
 
         //starts skeletongen when certain position is reached
         if (gameState2.player.body.y > gameState2.startLoopPos) {

@@ -37,11 +37,29 @@ class LoadingScene extends Phaser.Scene {
         //loads tilemap (for second level)
         this.load.tilemapTiledJSON('secondLevel', 'maps/level2.json');
 
-        //adds menu images
+        //loads menu images
         this.load.image('titleScreen', 'images/title_screen.png');
         this.load.image('playButton', 'images/play_button.png');
         this.load.image('creditsButton', 'images/credits_button.png');
         this.load.image('levelButton', 'images/level_button.png');
+
+        //loads level selection images and text
+        this.load.image('levelSelection', 'images/level_selection.png');
+        this.load.image('tutorialScreen', 'screens/tutorial_screenshot.png');
+        this.load.image('tutorialScreenFrame', 'screens/tutorial_screenshot_rahmen.png');
+        this.load.image('levelOneScreen', 'screens/level_one_screenshot.png');
+        this.load.image('levelOneScreenFrame', 'screens/level_one_screenshot_rahmen.png');
+        this.load.image('levelTwoScreen', 'screens/level_two_screenshot.png');
+        this.load.image('levelTwoScreenFrame', 'screens/level_two_screenshot_rahmen.png');
+        this.load.image('tutorialText', 'screens/tutorial_text.png');
+        this.load.image('level1Text', 'screens/level1_text.png');
+        this.load.image('level2Text', 'screens/level2_text.png');
+
+        //loads pause menu
+        this.load.image('pauseMenu', 'images/pause_menu.png');
+
+        //loads back button
+        this.load.image('backButton', 'images/back_button.png');
 
         //creates loading bar
         let loadingBar = this.add.graphics({

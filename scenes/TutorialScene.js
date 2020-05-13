@@ -3,7 +3,8 @@ const gameStateTutorial = {
     active: true,
     score: 0,
     startLoopPos: 1900,
-    positionReached: false
+    positionReached: false,
+    pauseOn: false
 };
 
 class TutorialScene extends Phaser.Scene {
@@ -131,6 +132,7 @@ class TutorialScene extends Phaser.Scene {
         gameStateTutorial.scoreText = this.add.text(10, 10, ``, { fontSize: '20px', fill: '#00000', fontWeight: '700', fontFamily: 'Arial Black' });
         gameStateTutorial.scoreText.setScrollFactor(0);
         gameStateTutorial.cursors = this.input.keyboard.createCursorKeys();
+        gameStateTutorial.pauseGroup = this.add.group();
 
         //adds GUI
         gameStateTutorial.hearts = this.add.sprite(70, 470, 'hearts', 0);
@@ -238,6 +240,34 @@ class TutorialScene extends Phaser.Scene {
     }
 
     update() {
+
+        //adds escape input
+        gameStateTutorial.pause = this.input.keyboard.addKey(27);
+        gameStateTutorial.pause.on('down', () => {
+            this.physics.pause();
+            gameStateTutorial.pauseOn = true;
+            gameStateTutorial.pauseScreen = this.add.image(0,40, 'pauseMenu');
+            gameStateTutorial.pauseScreen.setOrigin(0,0);
+            gameStateTutorial.backButtonPause = this.add.image(570, 440, 'backButton').setScale(.3);
+            gameStateTutorial.backButtonPause.setOrigin(0,0);
+            gameStateTutorial.pauseGroup.add(gameStateTutorial.pauseScreen);
+            gameStateTutorial.pauseGroup.add(gameStateTutorial.backButtonPause);
+            gameStateTutorial.pauseGroup.getChildren().forEach(child => {
+                child.setScrollFactor(0);
+            });
+            gameStateTutorial.pauseScreen.setInteractive();
+            gameStateTutorial.backButtonPause.setInteractive();
+            gameStateTutorial.pauseScreen.on('pointerup', () => {
+                this.scene.start('Menu');
+            });
+        });
+        if (gameStateTutorial.pauseOn) {
+            gameStateTutorial.backButtonPause.on('pointerup', () => {
+                gameStateTutorial.pauseGroup.clear(true);
+                gameStateTutorial.pauseOn = false;
+                this.physics.resume();
+            });
+        }
 
         //makes player walk
         if (gameStateTutorial.active === true) {
