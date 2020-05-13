@@ -474,6 +474,10 @@ class Scene2 extends Phaser.Scene {
             gameState2.player.play('playerHurt', true);
             gameState2.active = false;
             gameState2.positionReached = false;
+            this.input.on('pointerup', () => {
+                this.physics.resume();
+                this.scene.start("Level1");
+            });
         }
     }
 }
