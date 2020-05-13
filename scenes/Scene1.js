@@ -291,7 +291,9 @@ class Scene1 extends Phaser.Scene {
             gameState.pauseScreen.setInteractive();
             gameState.backButtonPause.setInteractive();
             gameState.pauseScreen.on('pointerup', () => {
-                this.scene.start('Menu');
+                if (gameState.onPause) {
+                    this.scene.start('Menu');
+                }
             });
         });
         if (gameState.pauseOn) {
