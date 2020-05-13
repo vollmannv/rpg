@@ -18,33 +18,6 @@ class TutorialScene extends Phaser.Scene {
 
     preload() {
 
-        //loads all spritesheets
-        this.load.spritesheet('player', 'sprites/player_body.png', {frameWidth: 64, frameHeight: 64});
-        this.load.spritesheet('skeleton', 'sprites/skeleton_body.png', {frameWidth: 64, frameHeight: 64});
-        this.load.spritesheet('playerHurt', 'sprites/player_hurt.png', {frameWidth: 64, frameHeight: 64});
-        this.load.spritesheet('skeletonCast', 'sprites/skeleton_cast.png', {frameWidth: 64, frameHeight: 64});
-        this.load.spritesheet('fireball', 'sprites/fireball.png', {frameWidth: 64, frameHeight: 64});
-        this.load.spritesheet('shuriken', 'sprites/throwingstars.png', {frameWidth: 12, frameHeight: 12});
-        this.load.spritesheet('hearts', 'sprites/hearts.png', {frameWidth: 121, frameHeight: 38})
-
-        //loadsSingleImages
-        this.load.image('singleHeart', 'sprites/single_heart.png');
-        this.load.image('dialog', 'images/dialog_box.png');
-
-        //loads tilemap
-        this.load.image('terrain', 'maps/assets/overworld.png');
-        this.load.tilemapTiledJSON('startingMap', 'maps/starting_map.json');
-
-        //loads tilemap (for first level)
-        this.load.tilemapTiledJSON('firstLevel', 'maps/level1.json');
-
-        //loads player with shoes (for second level)
-        this.load.spritesheet('playerShoes', 'sprites/player_shoes.png', {frameWidth: 64, frameHeight: 64});
-        this.load.spritesheet('playerShoesHurt', 'sprites/player_hurt_shoes.png', {frameWidth: 64, frameHeight: 64});
-
-        //loads tilemap (for second level)
-        this.load.tilemapTiledJSON('secondLevel', 'maps/level2.json');
-
     }
 
     create() {
@@ -165,7 +138,7 @@ class TutorialScene extends Phaser.Scene {
 
         //adds player
         gameStateTutorial.player = this.physics.add.sprite(150, 140, 'player', 18).setScale(.7);
-        
+
         //player camera and worldbounds setup
         this.cameras.main.setBounds(0,0,1280,1280);
         this.cameras.main.startFollow(gameStateTutorial.player, 480, 320);

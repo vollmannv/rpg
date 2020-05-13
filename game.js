@@ -1,12 +1,7 @@
-import {TutorialScene} from "./scenes/TutorialScene";
-import {Scene1} from "./scenes/Scene1";
-import {Scene2} from "./scenes/Scene2";
-import {Scene3} from "./scenes/Scene3";
-
 const config = {
 
     type: Phaser.AUTO,
-    backgroundColor: "ffffff",
+    backgroundColor: "000000",
     width: 700,
     height: 500,
     physics: {
@@ -16,7 +11,7 @@ const config = {
             debug: false
         }
     },
-    scene: [TutorialScene, Scene1, Scene2, Scene3]
+    scene: [LoadingScene, MenuScene, TutorialScene, Scene1, Scene2, Scene3],
 };
 
 const game = new Phaser.Game(config);
