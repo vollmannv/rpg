@@ -127,7 +127,7 @@ class Scene2 extends Phaser.Scene {
 
         //setup
         this.physics.world.setBounds(0, 0, 1280, 1280);
-        gameState2.lives = 2;
+        gameState2.lives = 3;
         gameState2.currentLevel = 1;
         gameState2.skeletonsLeft = 25;
         gameState2.cursors = this.input.keyboard.createCursorKeys();
