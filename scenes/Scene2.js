@@ -128,8 +128,8 @@ class Scene2 extends Phaser.Scene {
         //setup
         this.physics.world.setBounds(0, 0, 1280, 1280);
         gameState2.lives = 3;
-        gameState2.currentLevel = 1;
-        gameState2.skeletonsLeft = 25;
+        gameState2.currentLevel = 2;
+        gameState2.skeletonsLeft = 0;
         gameState2.cursors = this.input.keyboard.createCursorKeys();
         gameState2.score = gameState.score;
 
@@ -463,7 +463,7 @@ class Scene2 extends Phaser.Scene {
         });
     
         //what to do when level is won
-        if (gameState2.skeletonsLeft === 0 && gameState2.currentLevel === 1) {
+        if (gameState2.skeletonsLeft === 0 && gameState2.currentLevel === 2) {
             this.physics.pause();
             gameState2.skeletons.getChildren().forEach(skeleton => {
                 skeleton.destroy();
@@ -484,7 +484,7 @@ class Scene2 extends Phaser.Scene {
             this.input.on('pointerup', () => {
                 gameState2.active = true;
                 this.physics.resume();
-                this.scene.start("Level3");
+                this.scene.start("Level 3");
             });
         }
         
