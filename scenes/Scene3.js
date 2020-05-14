@@ -13,8 +13,6 @@ class Scene3 extends Phaser.Scene {
 
     create () {
 
-        alert('Level still under construction, reload page to start game again!');
-
     }
 
     update () {
