@@ -28,7 +28,7 @@ class LoadingScene extends Phaser.Scene {
         this.load.tilemapTiledJSON('startingMap', 'maps/starting_map.json');
 
         //loads tilemap (for first level)
-        this.load.tilemapTiledJSON('firstLevel', 'maps/level1.json');
+        this.load.tilemapTiledJSON('firstLevel', 'assets/tilemaps/first_level.json')
 
         //loads player with shoes (for second level)
         this.load.spritesheet('playerShoes', 'sprites/player_shoes.png', {frameWidth: 64, frameHeight: 64});
