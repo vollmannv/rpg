@@ -13,6 +13,7 @@ class LoadingScene extends Phaser.Scene {
         //loads all spritesheets
         this.load.spritesheet('player', 'sprites/player_body.png', {frameWidth: 64, frameHeight: 64});
         this.load.spritesheet('skeleton', 'sprites/skeleton_body.png', {frameWidth: 64, frameHeight: 64});
+        this.load.spritesheet('skeletonArmor', 'sprites/skeleton_armor_body.png', {frameWidth: 64, frameHeight: 64});
         this.load.spritesheet('playerHurt', 'sprites/player_hurt.png', {frameWidth: 64, frameHeight: 64});
         this.load.spritesheet('skeletonCast', 'sprites/skeleton_cast.png', {frameWidth: 64, frameHeight: 64});
         this.load.spritesheet('fireball', 'sprites/fireball.png', {frameWidth: 64, frameHeight: 64});
@@ -28,14 +29,20 @@ class LoadingScene extends Phaser.Scene {
         this.load.tilemapTiledJSON('startingMap', 'maps/starting_map.json');
 
         //loads tilemap (for first level)
-        this.load.tilemapTiledJSON('firstLevel', 'maps/level1.json');
+        this.load.tilemapTiledJSON('firstLevel', 'maps/level1.json')
+        //loads tilemap (for second level)
+        this.load.tilemapTiledJSON('secondLevel', 'maps/level2.json');
+        //loads tilemap (for third level)
+        this.load.tilemapTiledJSON('thirdLevel', 'maps/level3.json');
 
         //loads player with shoes (for second level)
         this.load.spritesheet('playerShoes', 'sprites/player_shoes.png', {frameWidth: 64, frameHeight: 64});
         this.load.spritesheet('playerShoesHurt', 'sprites/player_hurt_shoes.png', {frameWidth: 64, frameHeight: 64});
 
-        //loads tilemap (for second level)
-        this.load.tilemapTiledJSON('secondLevel', 'maps/level2.json');
+        //loads player with shoes and pants (for third level)
+        this.load.spritesheet('playerShoesPants', 'sprites/player_shoes_pants.png', {frameWidth: 64, frameHeight: 64});
+        this.load.spritesheet('playerShoesPantsHurt', 'sprites/player_hurt_shoes_pants.png', {frameWidth: 64, frameHeight: 64});
+
 
         //loads menu images
         this.load.image('titleScreen', 'images/title_screen.png');
@@ -45,15 +52,14 @@ class LoadingScene extends Phaser.Scene {
 
         //loads level selection images and text
         this.load.image('levelSelection', 'images/level_selection.png');
-        this.load.image('tutorialScreen', 'screens/tutorial_screenshot.png');
         this.load.image('tutorialScreenFrame', 'screens/tutorial_screenshot_rahmen.png');
-        this.load.image('levelOneScreen', 'screens/level_one_screenshot.png');
         this.load.image('levelOneScreenFrame', 'screens/level_one_screenshot_rahmen.png');
-        this.load.image('levelTwoScreen', 'screens/level_two_screenshot.png');
         this.load.image('levelTwoScreenFrame', 'screens/level_two_screenshot_rahmen.png');
+        this.load.image('levelThreeScreenFrame', 'screens/level_three_screenshot_rahmen.png');
         this.load.image('tutorialText', 'screens/tutorial_text.png');
         this.load.image('level1Text', 'screens/level1_text.png');
         this.load.image('level2Text', 'screens/level2_text.png');
+        this.load.image('level3Text', 'screens/level3_text.png');
 
         //loads pause menu
         this.load.image('pauseMenu', 'images/pause_menu.png');
@@ -73,7 +79,8 @@ class LoadingScene extends Phaser.Scene {
         this.load.on("progress", (percent)=>{
             loadingBar.fillRect(0, 250, 700 * percent, 25);
             console.log(percent);
-        });        
+        });
+                
 
     }
 
