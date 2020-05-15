@@ -28,7 +28,11 @@ class LoadingScene extends Phaser.Scene {
         this.load.tilemapTiledJSON('startingMap', 'maps/starting_map.json');
 
         //loads tilemap (for first level)
-        this.load.tilemapTiledJSON('firstLevel', 'assets/tilemaps/first_level.json')
+        this.load.tilemapTiledJSON('firstLevel', 'maps/level1.json')
+        //loads tilemap (for second level)
+        this.load.tilemapTiledJSON('secondLevel', 'maps/level2.json');
+        //loads tilemap (for third level)
+        this.load.tilemapTiledJSON('thirdLevel', 'maps/level3.json');
 
         //loads player with shoes (for second level)
         this.load.spritesheet('playerShoes', 'sprites/player_shoes.png', {frameWidth: 64, frameHeight: 64});
@@ -38,11 +42,6 @@ class LoadingScene extends Phaser.Scene {
         this.load.spritesheet('playerShoesPants', 'sprites/player_shoes_pants.png', {frameWidth: 64, frameHeight: 64});
         this.load.spritesheet('playerShoesPantsHurt', 'sprites/player_hurt_shoes_pants.png', {frameWidth: 64, frameHeight: 64});
 
-        //loads tilemap (for second level)
-        this.load.tilemapTiledJSON('secondLevel', 'maps/level2.json');
-
-        //loads tilemap (for third level)
-        this.load.tilemapTiledJSON('thirdLevel', 'maps/level3.json');
 
         //loads menu images
         this.load.image('titleScreen', 'images/title_screen.png');
