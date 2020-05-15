@@ -351,7 +351,7 @@ class Scene3 extends Phaser.Scene {
 
         //adds dialogue boxes
         gameState3.levelDialogueImage = this.add.image(gameState3.player.body.x, gameState3.player.body.y -70, 'dialog').setScale(.6);
-        gameState3.levelDialogueText = this.add.text(gameState3.player.body.x - 105, gameState3.player.body.y -90, "Welcome to the third Level!!\nThis level is going to be harder, but maybe you\nhave noticed your new awesome shoes.\nThey make you run and shoot faster! Good luck!", { fontSize: '8px', fill: '#00000', fontWeight: '700', fontFamily: 'Arial Black', fontAlign: 'center' });
+        gameState3.levelDialogueText = this.add.text(gameState3.player.body.x - 105, gameState3.player.body.y -90, "Welcome to the third Level!!\nThis level is going to be way harder, but maybe\nyou have noticed your new awesome pants\nThere will be a new type of enemy... Good luck!", { fontSize: '8px', fill: '#00000', fontWeight: '700', fontFamily: 'Arial Black', fontAlign: 'center' });
 
     }
 
