@@ -8,7 +8,7 @@ const config = {
         default: 'arcade',
         arcade: {
             enableBody: true,
-            debug: false
+            debug: true
         }
     },
     scene: [LoadingScene, MenuScene, LevelSelection, TutorialScene, Scene1, Scene2, Scene3],

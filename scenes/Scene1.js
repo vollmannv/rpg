@@ -98,16 +98,28 @@ class Scene1 extends Phaser.Scene {
             frames: this.anims.generateFrameNames('skeleton', {start: 27, end: 35})
         });
         this.anims.create({
+            key: 'skeletonUp',
+            repeat: -1,
+            frameRate: 10,
+            frames: this.anims.generateFrameNames('skeleton', {start: 0, end: 8})
+        });
+        this.anims.create({
             key: 'skeletonDown',
             repeat: -1,
             frameRate: 10,
             frames: this.anims.generateFrameNames('skeleton', {start: 19, end: 26})
         });
         this.anims.create({
-            key: 'skeletonUp',
+            key: 'fireballDown',
             repeat: -1,
             frameRate: 10,
-            frames: this.anims.generateFrameNames('skeleton', {start: 0, end: 8})
+            frames: this.anims.generateFrameNames('fireball', {start: 48, end: 55})
+        });
+        this.anims.create({
+            key: 'fireballUp',
+            repeat: -1,
+            frameRate: 10,
+            frames: this.anims.generateFrameNames('fireball', {start: 16, end: 23})
         });
         this.anims.create({
             key: 'fireballLeft',
@@ -178,7 +190,7 @@ class Scene1 extends Phaser.Scene {
                 const offsetX = Math.abs(xCoord - gameState.player.body.x);
                 const offsetY = Math.abs(yCoord - gameState.player.body.y);    
                 
-                if (offsetX > 70 && offsetY > 70) {
+                if (offsetX > 70 && offsetY > 70 && gameState.skeletons.getLength() < gameState.skeletons.maxSize) {
                     gameState.skeletons.create(xCoord, yCoord, 'skeleton', 18).setScale(.55);
                 }
             }
@@ -420,8 +432,14 @@ class Scene1 extends Phaser.Scene {
             }
         })
         gameState.skeletonAttack.getChildren().forEach(fireball => {
-            fireball.body.setSize(58, 20);
-            fireball.body.setOffset(0,20);
+
+            if (fireball.body.velocity.x > 0) {
+                fireball.body.setSize(58, 20);
+                fireball.body.setOffset(0,20);
+            } else {
+                fireball.body.setSize(20, 58);
+                fireball.body.setOffset(20,5);
+            }
     
             if (gameState.active === false) {
                 fireball.destroy();
@@ -434,14 +452,12 @@ class Scene1 extends Phaser.Scene {
             skeleton.body.setSize(30,50);
             skeleton.body.setOffset(17,15);
             if (gameState.positionReached) {
-                this.physics.moveToObject(skeleton, gameState.player, 25);
+                this.physics.moveToObject(skeleton, gameState.player, 15);
     
                 if (skeleton.body.velocity.x > 0) {
-                    if (skeleton.body.velocity.x > Math.abs(skeleton.body.velocity.y)) {
+                    if (Math.abs(skeleton.body.velocity.x) > Math.abs(skeleton.body.velocity.y)) {
                         skeleton.play('skeletonRight', true);
-                        skeleton.setVelocityY(0);
                     } else {
-                        skeleton.setVelocityX(0);
                         if (skeleton.body.velocity.y > 0) {
                             skeleton.play('skeletonDown', true);
                         } else {
@@ -449,11 +465,9 @@ class Scene1 extends Phaser.Scene {
                         }
                     }
                 } else if (skeleton.body.velocity.x < 0) {
-                    if (skeleton.body.velocity.x < Math.abs(skeleton.body.velocity.y)) {
+                    if (Math.abs(skeleton.body.velocity.x) > Math.abs(skeleton.body.velocity.y)) {
                         skeleton.play('skeletonLeft', true);
-                        skeleton.setVelocityY(0);
                     } else {
-                        skeleton.setVelocityX(0);
                         if(skeleton.body.velocity.y > 0) {
                             skeleton.play('skeletonDown', true);
                         } else {
@@ -464,16 +478,26 @@ class Scene1 extends Phaser.Scene {
     
                 let randNum = Math.floor(Math.random() * 1000)
                 if (randNum === 1) {
-                    if (skeleton.body.velocity.x > 0) {
-                        skeleton.play('skeletonCastRight', true);
-                        const newFireBall = gameState.skeletonAttack.create(skeleton.x, skeleton.y, 'fireball', 32).setScale(.3).play('fireballRight', true);
-                        this.physics.moveToObject(newFireBall, gameState.player, 70);
-                        newFireBall.play('fireballRight', true);
-                    } else if (skeleton.body.velocity.x < 0) {
-                        skeleton.play('skeletonCastLeft', true);
-                        const newFireBall = gameState.skeletonAttack.create(skeleton.x, skeleton.y, 'fireball', 0).setScale(.3).play('fireballLeft', true);
-                        this.physics.moveToObject(newFireBall, gameState.player, 70);
-                        newFireBall.play('fireballLeft', true);
+                    if (Math.abs(skeleton.body.velocity.x) > Math.abs(skeleton.body.velocity.y)) {
+                        if (skeleton.body.velocity.x > 0) {
+                            const newFireBall = gameState.skeletonAttack.create(skeleton.x, skeleton.y, 'fireball', 32).setScale(.3);
+                            newFireBall.setVelocityX(70);
+                            newFireBall.play('fireballRight', true);
+                        } else if (skeleton.body.velocity.x < 0) {
+                            const newFireBall = gameState.skeletonAttack.create(skeleton.x, skeleton.y, 'fireball', 0).setScale(.3);
+                            newFireBall.setVelocityX(-70);
+                            newFireBall.play('fireballLeft', true);
+                        }
+                    } else {
+                        if (skeleton.body.velocity.y > 0) {
+                            const newFireBall = gameState.skeletonAttack.create(skeleton.x, skeleton.y, 'fireball', 32).setScale(.4);
+                            newFireBall.setVelocityY(70);
+                            newFireBall.play('fireballDown', true);
+                        } else if (skeleton.body.velocity.y < 0) {
+                            const newFireBall = gameState.skeletonAttack.create(skeleton.x, skeleton.y, 'fireball', 0).setScale(.4);
+                            newFireBall.setVelocityY(-70);
+                            newFireBall.play('fireballUp', true);
+                        } 
                     }
                 }
             }

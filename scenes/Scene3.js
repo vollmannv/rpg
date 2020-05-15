@@ -97,16 +97,28 @@ class Scene3 extends Phaser.Scene {
             frames: this.anims.generateFrameNames('skeleton', {start: 27, end: 35})
         });
         this.anims.create({
-            key: 'skeletonCastRight',
-            repeat: 0,
+            key: 'skeletonUp',
+            repeat: -1,
             frameRate: 10,
-            frames: this.anims.generateFrameNames('skeletonCast', {start: 27, end: 35})
+            frames: this.anims.generateFrameNames('skeleton', {start: 0, end: 8})
         });
         this.anims.create({
-            key: 'skeletonCastLeft',
-            repeat: 0,
+            key: 'skeletonDown',
+            repeat: -1,
             frameRate: 10,
-            frames: this.anims.generateFrameNames('skeletonCast', {start: 9, end: 17})
+            frames: this.anims.generateFrameNames('skeleton', {start: 19, end: 26})
+        });
+        this.anims.create({
+            key: 'fireballDown',
+            repeat: -1,
+            frameRate: 10,
+            frames: this.anims.generateFrameNames('fireball', {start: 48, end: 55})
+        });
+        this.anims.create({
+            key: 'fireballUp',
+            repeat: -1,
+            frameRate: 10,
+            frames: this.anims.generateFrameNames('fireball', {start: 16, end: 23})
         });
         this.anims.create({
             key: 'fireballLeft',
