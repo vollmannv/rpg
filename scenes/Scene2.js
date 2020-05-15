@@ -88,25 +88,25 @@ class Scene2 extends Phaser.Scene {
         this.anims.create({
             key: 'skeletonLeft',
             repeat: -1,
-            frameRate: 5,
+            frameRate: 7,
             frames: this.anims.generateFrameNames('skeleton', {start: 9, end: 17})
         });
         this.anims.create({
             key: 'skeletonRight',
             repeat: -1,
-            frameRate: 5,
+            frameRate: 7,
             frames: this.anims.generateFrameNames('skeleton', {start: 27, end: 35})
         });
         this.anims.create({
             key: 'skeletonUp',
             repeat: -1,
-            frameRate: 10,
+            frameRate: 7,
             frames: this.anims.generateFrameNames('skeleton', {start: 0, end: 8})
         });
         this.anims.create({
             key: 'skeletonDown',
             repeat: -1,
-            frameRate: 10,
+            frameRate: 7,
             frames: this.anims.generateFrameNames('skeleton', {start: 19, end: 26})
         });
         this.anims.create({
@@ -154,7 +154,7 @@ class Scene2 extends Phaser.Scene {
         gameState2.shuriken = this.physics.add.group();
         gameState2.shuriken.maxSize = 2;
         gameState2.skeletons = this.physics.add.group();
-        gameState2.skeletons.maxSize = 50;
+        gameState2.skeletons.maxSize = 15;
         gameState2.skeletonAttack = this.physics.add.group();
         gameState2.singleHearts = this.physics.add.group();
         gameState2.shurikenDrop = this.physics.add.group();
@@ -546,7 +546,7 @@ class Scene2 extends Phaser.Scene {
             this.physics.pause();
             gameState2.skeletonGenLoop.destroy();
             gameState2.scoreTextEvent.destroy();
-            gameState2.player.play('playerHurt', true);
+            gameState2.player.play('playerShoesHurt', true);
             gameState2.active = false;
             gameState2.positionReached = false;
             this.input.on('pointerup', () => {

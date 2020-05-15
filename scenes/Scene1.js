@@ -88,25 +88,25 @@ class Scene1 extends Phaser.Scene {
         this.anims.create({
             key: 'skeletonLeft',
             repeat: -1,
-            frameRate: 5,
+            frameRate: 7,
             frames: this.anims.generateFrameNames('skeleton', {start: 9, end: 17})
         });
         this.anims.create({
             key: 'skeletonRight',
             repeat: -1,
-            frameRate: 5,
+            frameRate: 7,
             frames: this.anims.generateFrameNames('skeleton', {start: 27, end: 35})
         });
         this.anims.create({
             key: 'skeletonUp',
             repeat: -1,
-            frameRate: 10,
+            frameRate: 7,
             frames: this.anims.generateFrameNames('skeleton', {start: 0, end: 8})
         });
         this.anims.create({
             key: 'skeletonDown',
             repeat: -1,
-            frameRate: 10,
+            frameRate: 7,
             frames: this.anims.generateFrameNames('skeleton', {start: 19, end: 26})
         });
         this.anims.create({
@@ -164,7 +164,7 @@ class Scene1 extends Phaser.Scene {
         gameState.shuriken = this.physics.add.group();
         gameState.shuriken.maxSize = 1;
         gameState.skeletons = this.physics.add.group();
-        gameState.skeletons.maxSize = 20;
+        gameState.skeletons.maxSize = 8;
         gameState.skeletonAttack = this.physics.add.group();
         gameState.singleHearts = this.physics.add.group();
         gameState.shurikenDrop = this.physics.add.group();

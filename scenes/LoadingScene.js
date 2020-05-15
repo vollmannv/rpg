@@ -13,6 +13,7 @@ class LoadingScene extends Phaser.Scene {
         //loads all spritesheets
         this.load.spritesheet('player', 'sprites/player_body.png', {frameWidth: 64, frameHeight: 64});
         this.load.spritesheet('skeleton', 'sprites/skeleton_body.png', {frameWidth: 64, frameHeight: 64});
+        this.load.spritesheet('skeletonArmor', 'sprites/skeleton_armor_body.png', {frameWidth: 64, frameHeight: 64});
         this.load.spritesheet('playerHurt', 'sprites/player_hurt.png', {frameWidth: 64, frameHeight: 64});
         this.load.spritesheet('skeletonCast', 'sprites/skeleton_cast.png', {frameWidth: 64, frameHeight: 64});
         this.load.spritesheet('fireball', 'sprites/fireball.png', {frameWidth: 64, frameHeight: 64});
@@ -78,7 +79,8 @@ class LoadingScene extends Phaser.Scene {
         this.load.on("progress", (percent)=>{
             loadingBar.fillRect(0, 250, 700 * percent, 25);
             console.log(percent);
-        });        
+        });
+                
 
     }
 
