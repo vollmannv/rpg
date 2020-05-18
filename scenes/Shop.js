@@ -20,7 +20,6 @@ class Shop extends Phaser.Scene {
 
         this.input.on('pointerup', () => {
             this.scene.resume('Endless');
-            }
         }, this);
 
     }
