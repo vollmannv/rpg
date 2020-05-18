@@ -480,21 +480,21 @@ class Scene2 extends Phaser.Scene {
                     if (Math.abs(skeleton.body.velocity.x) > Math.abs(skeleton.body.velocity.y)) {
                         if (skeleton.body.velocity.x > 0) {
                             const newFireBall = gameState2.skeletonAttack.create(skeleton.x, skeleton.y, 'fireball', 32).setScale(.3);
-                            newFireBall.setVelocityX(70);
+                            newFireBall.setVelocityX(90);
                             newFireBall.play('fireballRight', true);
                         } else if (skeleton.body.velocity.x < 0) {
                             const newFireBall = gameState2.skeletonAttack.create(skeleton.x, skeleton.y, 'fireball', 0).setScale(.3);
-                            newFireBall.setVelocityX(-70);
+                            newFireBall.setVelocityX(-90);
                             newFireBall.play('fireballLeft', true);
                         }
                     } else {
                         if (skeleton.body.velocity.y > 0) {
                             const newFireBall = gameState2.skeletonAttack.create(skeleton.x, skeleton.y, 'fireball', 32).setScale(.4);
-                            newFireBall.setVelocityY(70);
+                            newFireBall.setVelocityY(90);
                             newFireBall.play('fireballDown', true);
                         } else if (skeleton.body.velocity.y < 0) {
                             const newFireBall = gameState2.skeletonAttack.create(skeleton.x, skeleton.y, 'fireball', 0).setScale(.4);
-                            newFireBall.setVelocityY(-70);
+                            newFireBall.setVelocityY(-90);
                             newFireBall.play('fireballUp', true);
                         } 
                     }
