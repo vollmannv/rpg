@@ -39,6 +39,9 @@ class LoadingScene extends Phaser.Scene {
         //loads tilemap (for fourth level)
         this.load.tilemapTiledJSON('fourthLevel', 'maps/level4.json');
 
+        //loads tilemap (for endlessmode)
+        this.load.tilemapTiledJSON('endlessMap', 'maps/endless.json');
+
         //loads player with shoes (for second level)
         this.load.spritesheet('playerShoes', 'sprites/player_shoes.png', {frameWidth: 64, frameHeight: 64});
         this.load.spritesheet('playerShoesHurt', 'sprites/player_hurt_shoes.png', {frameWidth: 64, frameHeight: 64});
@@ -56,6 +59,7 @@ class LoadingScene extends Phaser.Scene {
         this.load.image('playButton', 'images/play_button.png');
         this.load.image('creditsButton', 'images/credits_button.png');
         this.load.image('levelButton', 'images/level_button.png');
+        this.load.image('endlessButton', 'images/try_endless.png');
 
         //loads level selection images and text
         this.load.image('levelSelection', 'images/level_selection.png');
@@ -69,6 +73,14 @@ class LoadingScene extends Phaser.Scene {
         this.load.image('level2Text', 'screens/level2_text.png');
         this.load.image('level3Text', 'screens/level3_text.png');
         this.load.image('level4Text', 'screens/level4_text.png');
+
+        //loads items for endless mode
+        this.load.image('blueChest', 'items/ChestBlue.png');
+        this.load.image('yellowChest', 'items/ChestYellow.png');
+        this.load.image('redChest', 'items/ChestRed.png');
+        this.load.image('greenChest', 'items/ChestGreen.png');
+        this.load.image('coin', 'items/Coin.png');
+        this.load.image('gem', 'items/Gem.png');
 
         //loads pause menu
         this.load.image('pauseMenu', 'images/pause_menu.png');
