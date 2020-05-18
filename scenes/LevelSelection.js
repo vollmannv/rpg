@@ -32,6 +32,8 @@ class LevelSelection extends Phaser.Scene {
         levelSelectionState.level2.setOrigin(0,0);
         levelSelectionState.level3 = this.add.image(40, 275, 'levelThreeScreenFrame').setScale(.15);
         levelSelectionState.level3.setOrigin(0,0);
+        levelSelectionState.level4 = this.add.image(275, 275, 'levelFourScreenFrame').setScale(.15);
+        levelSelectionState.level4.setOrigin(0,0);
 
         //adds level text
         levelSelectionState.tutorialText = this.add.image(30, 210, 'tutorialText').setScale(.3);
@@ -42,12 +44,15 @@ class LevelSelection extends Phaser.Scene {
         levelSelectionState.level2Text.setOrigin(0,0);
         levelSelectionState.level3Text = this.add.image(40, 383, 'level3Text').setScale(.36);
         levelSelectionState.level3Text.setOrigin(0,0);
+        levelSelectionState.level4Text = this.add.image(275, 383, 'level4Text').setScale(.36);
+        levelSelectionState.level4Text.setOrigin(0,0);
 
         //adds level interactivity
         levelSelectionState.tutorial.setInteractive();
         levelSelectionState.level1.setInteractive();
         levelSelectionState.level2.setInteractive();
         levelSelectionState.level3.setInteractive();
+        levelSelectionState.level4.setInteractive();
         levelSelectionState.tutorial.on('pointerup', () => {
             this.scene.start("Tutorial");
         });
@@ -59,6 +64,9 @@ class LevelSelection extends Phaser.Scene {
         });
         levelSelectionState.level3.on('pointerup', () => {
             this.scene.start("Level3");
+        });
+        levelSelectionState.level4.on('pointerup', () => {
+            this.scene.start("Level4");
         });
 
 
