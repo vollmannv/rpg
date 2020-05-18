@@ -58,7 +58,7 @@ class LevelSelection extends Phaser.Scene {
             this.scene.start("Level2");
         });
         levelSelectionState.level3.on('pointerup', () => {
-            this.scene.start("Level 3");
+            this.scene.start("Level3");
         });
 
 

@@ -3,12 +3,13 @@ const gameState3 = {
     active: true,
     startLoopPos: 250,
     positionReached: false,
-    pauseOn: false
+    pauseOn: false,
+    skeletonLives: []
 }
 
 class Scene3 extends Phaser.Scene {
     constructor () {
-        super("Level 3");
+        super("Level3");
     }
 
     init () {
@@ -99,13 +100,13 @@ class Scene3 extends Phaser.Scene {
         this.anims.create({
             key: 'skeletonUp',
             repeat: -1,
-            frameRate: 7,
+            frameRate: 9,
             frames: this.anims.generateFrameNames('skeleton', {start: 0, end: 8})
         });
         this.anims.create({
             key: 'skeletonDown',
             repeat: -1,
-            frameRate: 7,
+            frameRate: 9,
             frames: this.anims.generateFrameNames('skeleton', {start: 19, end: 26})
         });
         this.anims.create({
@@ -123,13 +124,13 @@ class Scene3 extends Phaser.Scene {
         this.anims.create({
             key: 'skeletonArmorUp',
             repeat: -1,
-            frameRate: 3,
+            frameRate: 5,
             frames: this.anims.generateFrameNames('skeletonArmor', {start: 0, end: 8})
         });
         this.anims.create({
             key: 'skeletonArmorDown',
             repeat: -1,
-            frameRate: 3,
+            frameRate: 5,
             frames: this.anims.generateFrameNames('skeletonArmor', {start: 19, end: 26})
         });
         this.anims.create({
@@ -162,7 +163,7 @@ class Scene3 extends Phaser.Scene {
 
         //setup
         this.physics.world.setBounds(0, 0, 1280, 1280);
-        gameState3.lives = 3;
+        gameState3.lives = 4;
         gameState3.currentLevel = 3;
         gameState3.skeletonsLeft = 35;
         gameState3.cursors = this.input.keyboard.createCursorKeys();
@@ -188,6 +189,8 @@ class Scene3 extends Phaser.Scene {
         //adds GUI
         gameState3.hearts = this.add.sprite(70, 470, 'hearts', 0);
         gameState3.hearts.setScrollFactor(0);
+        gameState3.extraHeart = this.add.sprite(154, 471, 'extraHeart', 0);
+        gameState3.extraHeart.setScrollFactor(0);
         gameState3.scoreText = this.add.text(10, 10, ``, { fontSize: '20px', fill: '#00000', fontWeight: '700', fontFamily: 'Arial Black' });
         gameState3.scoreText.setScrollFactor(0);
 
@@ -231,7 +234,8 @@ class Scene3 extends Phaser.Scene {
                 const offsetY = Math.abs(yCoord - gameState3.player.body.y);    
                 
                 if (offsetX > 70 && offsetY > 70 && gameState3.skeletonsArmor.getLength() < gameState3.skeletonsArmor.maxSize) {
-                    gameState3.skeletonsArmor.create(xCoord, yCoord, 'skeletonArmor', 18).setScale(.8);
+                    let newSkeleton = gameState3.skeletonsArmor.create(xCoord, yCoord, 'skeletonArmor', 18).setScale(.8);
+                    newSkeleton.setData('health', 2);
                 }
             }
         }   
@@ -264,7 +268,7 @@ class Scene3 extends Phaser.Scene {
             updateScore();
         });
         this.physics.add.collider(gameState3.player, gameState3.skeletonsArmor, (player, skeleton) => {
-            gameState3.lives -= 1;
+            gameState3.lives -= 2;
             skeleton.destroy();
             gameState3.skeletonsArmorLeft--;
             updateScore();
@@ -298,22 +302,27 @@ class Scene3 extends Phaser.Scene {
 
         this.physics.add.collider(gameState3.skeletonsArmor, gameState3.shuriken, (skeleton, shuriken) => {
             
-            skeleton.destroy();
-            gameState3.score += 50;
-                
-            const randomNumber = Math.floor(Math.random() * 10);
-            if (gameState3.lives < 3) {
-                if (randomNumber === 3 || randomNumber === 4) {
-                    gameState3.singleHearts.create(skeleton.x, skeleton.y, 'singleHeart').setScale(.35);
+            let health = skeleton.getData('health');
+            health--;
+            skeleton.setData('health', health);
+            if (health === 0) {
+                skeleton.destroy();
+                gameState3.score += 50;
+                    
+                const randomNumber = Math.floor(Math.random() * 10);
+                if (gameState3.lives < 4) {
+                    if (randomNumber === 3 || randomNumber === 4) {
+                        gameState3.singleHearts.create(skeleton.x, skeleton.y, 'singleHeart').setScale(.35);
+                    }
                 }
+                if (randomNumber === 2 || randomNumber === 1) {
+                    const newDrop = gameState3.shurikenDrop.create(skeleton.x, skeleton.y, 'shuriken', 0).setScale(1.4);
+                    newDrop.play('shuriken');
+                }
+                    
+                gameState3.skeletonsLeft--;
+                updateScore();
             }
-            if (randomNumber === 2 || randomNumber === 1) {
-                const newDrop = gameState3.shurikenDrop.create(skeleton.x, skeleton.y, 'shuriken', 0).setScale(1.4);
-                newDrop.play('shuriken');
-            }
-                
-            gameState3.skeletonsLeft--;
-            updateScore();
             shuriken.destroy();
         });
 
@@ -351,7 +360,7 @@ class Scene3 extends Phaser.Scene {
 
         //adds dialogue boxes
         gameState3.levelDialogueImage = this.add.image(gameState3.player.body.x, gameState3.player.body.y -70, 'dialog').setScale(.6);
-        gameState3.levelDialogueText = this.add.text(gameState3.player.body.x - 105, gameState3.player.body.y -90, "Welcome to the third Level!!\nThis level is going to be way harder, but maybe\nyou have noticed your new awesome pants\nThere will be a new type of enemy... Good luck!", { fontSize: '8px', fill: '#00000', fontWeight: '700', fontFamily: 'Arial Black', fontAlign: 'center' });
+        gameState3.levelDialogueText = this.add.text(gameState3.player.body.x - 105, gameState3.player.body.y -90, "Welcome to the third Level!!\nThis level is going to be way harder, so you get\nan additional heart and some awesome pants.\nThere will be a new type of enemy... Good luck!", { fontSize: '8px', fill: '#00000', fontWeight: '700', fontFamily: 'Arial Black', fontAlign: 'center' });
 
     }
 
@@ -662,17 +671,29 @@ class Scene3 extends Phaser.Scene {
         }
         
         //what to do when level is lost
-        if (gameState3.lives === 3) {
+        if (gameState3.lives === 4) {
             gameState3.hearts.setTexture('hearts', 0);
+            gameState3.hearts.setY(470);
+            gameState3.extraHeart.setTexture('extraHeart', 0);
+        } else if (gameState3.lives === 3) {
+            gameState3.hearts.setTexture('hearts', 0);
+            gameState3.hearts.setY(470);
+            gameState3.extraHeart.setTexture('extraHeart', 1);
         } else if (gameState3.lives === 2) {
             gameState3.hearts.setTexture('hearts', 1);
+            gameState3.hearts.setY(471);
+            gameState3.extraHeart.setTexture('extraHeart', 1);
         } else if (gameState3.lives === 1) {
             gameState3.hearts.setTexture('hearts', 2);
+            gameState3.hearts.setY(472);
+            gameState3.extraHeart.setTexture('extraHeart', 1);
         } else if (gameState3.lives === 0 && gameState3.active) {
             const levelDialog = this.add.image(gameState3.player.body.x, gameState3.player.body.y -70, 'dialog').setScale(.6);
             const levelText = this.add.text(gameState3.player.body.x -100, gameState3.player.body.y -85, 'You lost!', { fontSize: '18px', fill: '#00000', fontWeight: '700', fontFamily: 'Arial Black', textAlign: 'center' });
             const levelText2 = this.add.text(gameState3.player.body.x -110, gameState3.player.body.y -65, 'Click on the screen to restart the game', { fontSize: '10px', fill: '#00000', fontWeight: '700', fontFamily: 'Arial Black', textAlign: 'center' });
             gameState3.hearts.setTexture('hearts', 3);
+            gameState3.hearts.setY(472);
+            gameState3.extraHeart.setTexture('extraHeart', 1);
             this.physics.pause();
             gameState3.skeletonGenLoop.destroy();
             gameState3.skeletonArmorGenLoop.destroy();
