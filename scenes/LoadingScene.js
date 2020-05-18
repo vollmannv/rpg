@@ -18,7 +18,8 @@ class LoadingScene extends Phaser.Scene {
         this.load.spritesheet('skeletonCast', 'sprites/skeleton_cast.png', {frameWidth: 64, frameHeight: 64});
         this.load.spritesheet('fireball', 'sprites/fireball.png', {frameWidth: 64, frameHeight: 64});
         this.load.spritesheet('shuriken', 'sprites/throwingstars.png', {frameWidth: 12, frameHeight: 12});
-        this.load.spritesheet('hearts', 'sprites/hearts.png', {frameWidth: 121, frameHeight: 38})
+        this.load.spritesheet('hearts', 'sprites/hearts.png', {frameWidth: 121, frameHeight: 38});
+        this.load.spritesheet('extraHeart', 'sprites/extra_heart.png', {frameWidth: 41, frameHeight: 38});
 
         //loadsSingleImages
         this.load.image('singleHeart', 'sprites/single_heart.png');
