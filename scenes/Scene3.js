@@ -165,7 +165,7 @@ class Scene3 extends Phaser.Scene {
         this.physics.world.setBounds(0, 0, 1280, 1280);
         gameState3.lives = 4;
         gameState3.currentLevel = 3;
-        gameState3.skeletonsLeft = 35;
+        gameState3.skeletonsLeft = 40;
         gameState3.cursors = this.input.keyboard.createCursorKeys();
         gameState3.score = gameState.score;
 
@@ -176,7 +176,7 @@ class Scene3 extends Phaser.Scene {
 
         //adds different physics groups
         gameState3.shuriken = this.physics.add.group();
-        gameState3.shuriken.maxSize = 2;
+        gameState3.shuriken.maxSize = 3;
         gameState3.skeletons = this.physics.add.group();
         gameState3.skeletons.maxSize = 20;
         gameState3.skeletonsArmor = this.physics.add.group();
@@ -234,7 +234,7 @@ class Scene3 extends Phaser.Scene {
                 const offsetY = Math.abs(yCoord - gameState3.player.body.y);    
                 
                 if (offsetX > 70 && offsetY > 70 && gameState3.skeletonsArmor.getLength() < gameState3.skeletonsArmor.maxSize) {
-                    let newSkeleton = gameState3.skeletonsArmor.create(xCoord, yCoord, 'skeletonArmor', 18).setScale(.8);
+                    let newSkeleton = gameState3.skeletonsArmor.create(xCoord, yCoord, 'skeletonArmor', 18).setScale(.9);
                     newSkeleton.setData('health', 2);
                 }
             }
@@ -645,7 +645,7 @@ class Scene3 extends Phaser.Scene {
         });
     
         //what to do when level is won
-        if (gameState3.skeletonsLeft === 0 && gameState3.currentLevel === 2) {
+        if (gameState3.skeletonsLeft === 0 && gameState3.currentLevel === 3) {
             this.physics.pause();
             gameState3.skeletons.getChildren().forEach(skeleton => {
                 skeleton.destroy();
@@ -698,7 +698,7 @@ class Scene3 extends Phaser.Scene {
             gameState3.skeletonGenLoop.destroy();
             gameState3.skeletonArmorGenLoop.destroy();
             gameState3.scoreTextEvent.destroy();
-            gameState3.player.play('playerShoesPantsHurt', true);
+            gameState3.player.play('playerClothesHurt', true);
             gameState3.active = false;
             gameState3.positionReached = false;
             this.input.on('pointerup', () => {
