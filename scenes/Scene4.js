@@ -432,7 +432,7 @@ class Scene4 extends Phaser.Scene {
 
         //adds dialogue boxes
         gameState4.levelDialogueImage = this.add.image(gameState4.player.body.x, gameState4.player.body.y -70, 'dialog').setScale(.6);
-        gameState4.levelDialogueText = this.add.text(gameState4.player.body.x - 105, gameState4.player.body.y -90, "Welcome to the fourth Level!!\nThis level is going to be way harder, so you get\nan additional heart and an awesome shirt.\nThere will be a new type of enemy... Good luck!", { fontSize: '8px', fill: '#00000', fontWeight: '700', fontFamily: 'Arial Black', fontAlign: 'center' });
+        gameState4.levelDialogueText = this.add.text(gameState4.player.body.x - 105, gameState4.player.body.y -90, "Welcome to the fourth Level!!\nThis level is going to be way harder, so you get\nan additional heart and a new shirt.\nThere will be a new type of enemy... Good luck!", { fontSize: '8px', fill: '#00000', fontWeight: '700', fontFamily: 'Arial Black', fontAlign: 'center' });
 
     }
 
