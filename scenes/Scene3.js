@@ -353,7 +353,7 @@ class Scene3 extends Phaser.Scene {
         //restarts the game when lost and click on screen
         this.input.on('pointerup', () => {
             if (gameState.active === false) {
-                this.scene.start("Level 1");
+                this.scene.start("Level1");
                 gameState.active = true;
             }
         });
