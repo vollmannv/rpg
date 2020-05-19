@@ -80,21 +80,74 @@ class Endless extends Phaser.Scene {
 
         //adds player to screen
         this.player = this.physics.add.sprite(100, 100, 'player', 18).setScale(.7);
-        this.player.play('walkDown', true);
+
+        //adds cursors
+        this.cursors = this.input.keyboard.createCursorKeys();
 
         //adds map to screen
         this.map = this.add.tilemap('endlessMap', 16, 16, 160,160);
         let terrain = this.map.addTilesetImage('overworld', 'terrain');
-        this.layer = this.map.createStaticLayer('layer', [terrain], 0 ,0).setDepth(-1);
-
-        this.input.on('pointerup', () => {
+        this.layer = this.map.createStaticLayer('layer', [terrain], 0, 0).setDepth(-1);
+        this.shop = this.map.createStaticLayer('shop', [terrain], 0, 0).setDepth(-1);
+        this.shop.setCollisionByProperty({collision: true});
+        this.physics.add.collider(this.player, this.shop, () => {
             this.scene.pause();
             this.scene.launch('Shop');
-        }, this);
+        });
 
     }
 
     update () {
+
+        //makes player walk
+        if (this.cursors.down.isDown) {
+            this.player.play('walkDown', true);
+            this.player.setVelocityY(80);
+            this.player.setVelocityX(0);
+        } else if (this.cursors.up.isDown) {
+            this.player.setVelocityY(-80);
+            this.player.play('walkUp', true);
+            this.player.setVelocityX(0);
+        }
+
+        if (this.cursors.left.isDown) {
+            this.player.setVelocityX(-80);
+            this.player.setVelocityY(0);
+            this.player.play('walkLeft', true);
+        } else if (this.cursors.right.isDown) {
+            this.player.setVelocityX(80);
+            this.player.setVelocityY(0);
+            this.player.play('walkRight', true);
+        }
+        
+        //player idle when not moving
+        if (this.cursors.left.isUp) {
+            if (this.player.body.velocity.x < 0) {
+                this.player.setVelocityX(-0.001);
+                this.player.play('playerIdleLeft', true);
+                this.player.setTexture('player', 9);
+            }
+        }
+        if (this.cursors.right.isUp) {
+            if (this.player.body.velocity.x > 0) {
+                this.player.setVelocityX(0.001);
+                this.player.play('playerIdleRight', true);
+                this.player.setTexture('player', 27);
+            }
+        }
+        if (this.cursors.up.isUp) {
+            if (this.player.body.velocity.y < 0) {
+                this.player.setVelocityY(-0.001);
+                this.player.play('playerIdleUp', true);
+                this.player.setTexture('player', 1);
+            }
+        }
+        if (this.cursors.down.isUp) {
+            if (this.player.body.velocity.y > 0) {
+                this.player.setVelocityY(0);
+                this.player.play('idle', true);
+            }
+        }
         
     }
 
