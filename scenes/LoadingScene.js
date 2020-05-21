@@ -82,6 +82,26 @@ class LoadingScene extends Phaser.Scene {
         this.load.image('coin', 'items/Coin.png');
         this.load.image('gem', 'items/Gem.png');
 
+        //loads clothes for endless mode
+        this.load.spritesheet('helmetArmor', 'sprites/clothes/walk/helmet_armor.png', {frameWidth: 64, frameHeight: 64});
+        this.load.spritesheet('helmetHood', 'sprites/clothes/walk/helmet_hood.png', {frameWidth: 64, frameHeight: 64});
+        this.load.spritesheet('pantsArmor', 'sprites/clothes/walk/pants_armor.png', {frameWidth: 64, frameHeight: 64});
+        this.load.spritesheet('pantsGreen', 'sprites/clothes/walk/pants_green.png', {frameWidth: 64, frameHeight: 64});
+        this.load.spritesheet('shield', 'sprites/clothes/walk/shield.png', {frameWidth: 64, frameHeight: 64});
+        this.load.spritesheet('shirtArmor', 'sprites/clothes/walk/shirt_armor.png', {frameWidth: 64, frameHeight: 64});
+        this.load.spritesheet('shirtWhite', 'sprites/clothes/walk/shirt_white.png', {frameWidth: 64, frameHeight: 64});
+        this.load.spritesheet('shoesArmor', 'sprites/clothes/walk/shoes_armor.png', {frameWidth: 64, frameHeight: 64});
+        this.load.spritesheet('shoesBrown', 'sprites/clothes/walk/shoes_brown.png', {frameWidth: 64, frameHeight: 64});
+
+        this.load.spritesheet('helmetArmorHurt', 'sprites/clothes/hurt/helmet_armor_hurt.png', {frameWidth: 64, frameHeight: 64});
+        this.load.spritesheet('helmetHoodHurt', 'sprites/clothes/hurt/helmet_hood_hurt.png', {frameWidth: 64, frameHeight: 64});
+        this.load.spritesheet('pantsArmorHurt', 'sprites/clothes/hurt/pants_armor_hurt.png', {frameWidth: 64, frameHeight: 64});
+        this.load.spritesheet('pantsGreenHurt', 'sprites/clothes/hurt/pants_green_hurt.png', {frameWidth: 64, frameHeight: 64});
+        this.load.spritesheet('shirtArmorHurt', 'sprites/clothes/hurt/shirt_armor_hurt.png', {frameWidth: 64, frameHeight: 64});
+        this.load.spritesheet('shirtWhiteHurt', 'sprites/clothes/hurt/shirt_white_hurt.png', {frameWidth: 64, frameHeight: 64});
+        this.load.spritesheet('shoesArmorHurt', 'sprites/clothes/hurt/shoes_armor_hurt.png', {frameWidth: 64, frameHeight: 64});
+        this.load.spritesheet('shoesBrownHurt', 'sprites/clothes/hurt/shoes_brown_hurt.png', {frameWidth: 64, frameHeight: 64});
+
         //loads pause menu
         this.load.image('pauseMenu', 'images/pause_menu.png');
 

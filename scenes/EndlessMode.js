@@ -48,18 +48,6 @@ class Endless extends Phaser.Scene {
             frames: this.anims.generateFrameNames('player', {start: 18, end: 19})
         });
         this.anims.create({
-            key: 'playerHurt',
-            repeat: 0,
-            frameRate: 10,
-            frames: this.anims.generateFrameNames('playerHurt', {start: 0, end: 5})
-        });
-        this.anims.create({
-            key: 'shuriken',
-            repeat: -1,
-            frameRate: 10,
-            frames: this.anims.generateFrameNames('shuriken', {start: 0, end: 2})
-        });
-        this.anims.create({
             key: 'playerIdleLeft',
             repeat: -1,
             frameRate: 1,
@@ -77,7 +65,76 @@ class Endless extends Phaser.Scene {
             frameRate: 1,
             frames: this.anims.generateFrameNames('player', {start: 0, end: 1})
         });
+        this.anims.create({
+            key: 'playerHurt',
+            repeat: 0,
+            frameRate: 10,
+            frames: this.anims.generateFrameNames('playerHurt', {start: 0, end: 5})
+        });
+        
+        //adds clothes animations
+        this.anims.create({
+            key: 'shoesBrownDown',
+            repeat: -1,
+            frameRate: 10,
+            frames: this.anims.generateFrameNames('shoesBrown', {start: 19, end: 26})
+        });
+        this.anims.create({
+            key: 'shoesBrownUp',
+            repeat: -1,
+            frameRate: 10,
+            frames: this.anims.generateFrameNames('shoesBrown', {start: 0, end: 8})
+        });
+        this.anims.create({
+            key: 'shoesBrownLeft',
+            repeat: -1,
+            frameRate: 10,
+            frames: this.anims.generateFrameNames('shoesBrown', {start: 9, end: 17})
+        });
+        this.anims.create({
+            key: 'shoesBrownRight',
+            repeat: -1,
+            frameRate: 10,
+            frames: this.anims.generateFrameNames('shoesBrown', {start: 27, end: 35})
+        });
+        this.anims.create({
+            key: 'shoesBrownIdle',
+            repeat: -1,
+            frameRate: 1,
+            frames: this.anims.generateFrameNames('shoesBrown', {start: 18, end: 19})
+        });
+        this.anims.create({
+            key: 'shoesBrownIdleLeft',
+            repeat: -1,
+            frameRate: 1,
+            frames: this.anims.generateFrameNames('shoesBrown', {start: 9, end: 9})
+        });
+        this.anims.create({
+            key: 'shoesBrownIdleRight',
+            repeat: -1,
+            frameRate: 1,
+            frames: this.anims.generateFrameNames('shoesBrown', {start: 27, end: 27})
+        });
+        this.anims.create({
+            key: 'shoesBrownIdleUp',
+            repeat: -1,
+            frameRate: 1,
+            frames: this.anims.generateFrameNames('shoesBrown', {start: 0, end: 1})
+        });
+        this.anims.create({
+            key: 'shoesBrownHurt',
+            repeat: 0,
+            frameRate: 10,
+            frames: this.anims.generateFrameNames('shoesBrownHurt', {start: 0, end: 5})
+        });
 
+
+        this.anims.create({
+            key: 'shuriken',
+            repeat: -1,
+            frameRate: 10,
+            frames: this.anims.generateFrameNames('shuriken', {start: 0, end: 2})
+        });
         //adds player to screen
         this.player = this.physics.add.sprite(100, 100, 'player', 18).setScale(.7);
 
@@ -95,9 +152,49 @@ class Endless extends Phaser.Scene {
             this.scene.launch('Shop');
         });
 
+        //clothes array
+        const shoesBrown = this.physics.add.sprite(0,0, 'shoesBrown', 18).setScale(.7).setVisible(false);
+        shoesBrown.setOrigin(0,0);
+        shoesBrown.setName('shoesBrown');
+        this.activeClothes = [];
+        //this.activeClothes.push(shoesBrown); 
+
     }
 
     update () {
+
+        //checks for clothes
+        
+        for (let i = 0; i < this.activeClothes.length; i++) {
+            let clothes = this.activeClothes[i]
+            clothes.setVisible(true);
+            clothes.setVelocityX(this.player.body.velocity.x);
+            clothes.setVelocityY(this.player.body.velocity.y);
+            clothes.setX(this.player.body.x);
+            clothes.setY(this.player.body.y);
+            let name = clothes.name;
+            if (this.player.anims.currentAnim) {
+                if (this.player.anims.currentAnim.key === 'walkRight') {
+                    clothes.play(`${name}Right`, true);
+                } else if (this.player.anims.currentAnim.key === 'walkLeft') {
+                    clothes.play(`${name}Left`, true);
+                } else if (this.player.anims.currentAnim.key === 'walkDown') {
+                    clothes.play(`${name}Down`, true);
+                } else if (this.player.anims.currentAnim.key === 'walkUp') {
+                    clothes.play(`${name}Up`, true);
+                } else if (this.player.anims.currentAnim.key === 'playerIdleRight') {
+                    clothes.play(`${name}IdleRight`, true);
+                } else if (this.player.anims.currentAnim.key === 'playerIdleLeft') {
+                    clothes.play(`${name}IdleLeft`, true);
+                } else if (this.player.anims.currentAnim.key === 'playerIdleUp') {
+                    clothes.play(`${name}IdleUp`, true);
+                } else if (this.player.anims.currentAnim.key === 'playerHurt') {
+                    clothes.play(`${name}Hurt`, true);
+                } else {
+                    clothes.play(`${name}Idle`, true);
+                }
+            }
+        }
 
         //makes player walk
         if (this.cursors.down.isDown) {
