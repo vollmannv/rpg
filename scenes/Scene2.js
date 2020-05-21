@@ -226,9 +226,7 @@ class Scene2 extends Phaser.Scene {
                 gameState2.player.setVelocityY(-110);
                 gameState2.player.play('walkUpShoes', true);
                 gameState2.player.setVelocityX(0);
-            } 
-            
-            if (gameState2.cursors.left.isDown) {
+            } else if (gameState2.cursors.left.isDown) {
                 gameState2.player.setVelocityX(-110);
                 gameState2.player.setVelocityY(0);
                 gameState2.player.play('walkLeftShoes', true);

@@ -281,9 +281,7 @@ class Scene3 extends Phaser.Scene {
                 gameState3.player.setVelocityY(-110);
                 gameState3.player.play('walkUpShoesPants', true);
                 gameState3.player.setVelocityX(0);
-            } 
-            
-            if (gameState3.cursors.left.isDown) {
+            } else if (gameState3.cursors.left.isDown) {
                 gameState3.player.setVelocityX(-110);
                 gameState3.player.setVelocityY(0);
                 gameState3.player.play('walkLeftShoesPants', true);

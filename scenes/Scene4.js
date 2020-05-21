@@ -329,9 +329,7 @@ class Scene4 extends Phaser.Scene {
                 gameState4.player.setVelocityY(-110);
                 gameState4.player.play('walkUpClothes', true);
                 gameState4.player.setVelocityX(0);
-            } 
-            
-            if (gameState4.cursors.left.isDown) {
+            } else if (gameState4.cursors.left.isDown) {
                 gameState4.player.setVelocityX(-110);
                 gameState4.player.setVelocityY(0);
                 gameState4.player.play('walkLeftClothes', true);

@@ -21,7 +21,7 @@ class Scene1 extends Phaser.Scene {
     }
 
     create() {
-                
+
         //setup
         this.physics.world.setBounds(0, 0, 1280, 1280);
         gameState.score = 0;
@@ -225,9 +225,7 @@ class Scene1 extends Phaser.Scene {
                 gameState.player.setVelocityY(-80);
                 gameState.player.play('walkUp', true);
                 gameState.player.setVelocityX(0);
-            } 
-            
-            if (gameState.cursors.left.isDown) {
+            } else if (gameState.cursors.left.isDown) {
                 gameState.player.setVelocityX(-80);
                 gameState.player.setVelocityY(0);
                 gameState.player.play('walkLeft', true);

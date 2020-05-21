@@ -25,6 +25,10 @@ class Endless extends Phaser.Scene {
         this.player.setCollideWorldBounds(true);
         this.player.setOrigin(0,0);
 
+        //player camera and worldbounds setup
+        this.cameras.main.setBounds(0,0,1500,1500);
+        this.cameras.main.startFollow(this.player, 480, 320);
+        this.physics.world.setBounds(0,0,1500,1500);
         
         //adds cursors
         this.cursors = this.input.keyboard.createCursorKeys();
@@ -131,9 +135,7 @@ class Endless extends Phaser.Scene {
             this.player.setVelocityY(-80);
             this.player.play('walkUp', true);
             this.player.setVelocityX(0);
-        }
-
-        if (this.cursors.left.isDown) {
+        } else if (this.cursors.left.isDown) {
             this.player.setVelocityX(-80);
             this.player.setVelocityY(0);
             this.player.play('walkLeft', true);
