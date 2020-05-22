@@ -19,6 +19,7 @@ class LoadingScene extends Phaser.Scene {
         this.load.spritesheet('skeletonCast', 'sprites/skeleton_cast.png', {frameWidth: 64, frameHeight: 64});
         this.load.spritesheet('fireball', 'sprites/fireball.png', {frameWidth: 64, frameHeight: 64});
         this.load.spritesheet('shuriken', 'sprites/throwingstars.png', {frameWidth: 12, frameHeight: 12});
+        this.load.spritesheet('shurikenBlue', 'sprites/throwingstars_blue.png', {frameWidth: 12, frameHeight: 12});
         this.load.spritesheet('hearts', 'sprites/hearts.png', {frameWidth: 121, frameHeight: 38});
         this.load.spritesheet('extraHeart', 'sprites/extra_heart.png', {frameWidth: 41, frameHeight: 38});
 
@@ -81,6 +82,10 @@ class LoadingScene extends Phaser.Scene {
         this.load.image('greenChest', 'items/ChestGreen.png');
         this.load.image('coin', 'items/Coin.png');
         this.load.image('gem', 'items/Gem.png');
+
+        //shop
+        this.load.image('testBg', 'images/bg.png');
+        this.load.image('whiteSquare', 'images/shop/white_square.png');
 
         //loads clothes for endless mode
         this.load.spritesheet('helmetArmor', 'sprites/clothes/walk/helmet_armor.png', {frameWidth: 64, frameHeight: 64});

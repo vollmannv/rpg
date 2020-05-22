@@ -1,5 +1,7 @@
 const globals = {
-    activeClothes: []    
+    activeClothes: [],
+    shopCollision: true,
+    lives: 0  
 }
 
 class Endless extends Phaser.Scene {
@@ -29,6 +31,11 @@ class Endless extends Phaser.Scene {
         this.cameras.main.setBounds(0,0,1500,1500);
         this.cameras.main.startFollow(this.player, 480, 320);
         this.physics.world.setBounds(0,0,1500,1500);
+
+        //GUI
+        globals.GUIHearts = this.add.sprite(70, 470, 'hearts', 0).setScrollFactor(0);
+        globals.GUICoins = this.add.sprite(10, 10, 'coin').setOrigin(0,0).setScale(1.7).setScrollFactor(0);
+        globals.GUIGems = this.add.sprite(10, 45, 'gem').setOrigin(0,0).setScale(1.7).setScrollFactor(0);
         
         //adds cursors
         this.cursors = this.input.keyboard.createCursorKeys();
@@ -40,12 +47,16 @@ class Endless extends Phaser.Scene {
         this.shop = this.map.createStaticLayer('shop', [terrain], 0, 0).setDepth(-1);
         this.shop.setCollisionByProperty({collision: true});
         this.physics.add.collider(this.player, this.shop, () => {
-            this.scene.pause();
-            this.scene.launch('Shop');
+            this.player.setVelocityX(0);
+            this.player.setVelocityY(0);
+            if (globals.shopCollision) {
+                this.scene.pause();
+                this.scene.launch('Shop');
+            }
         });
 
         //creates clothing sprites (push to globals.activeClothes to show on player)
-        const clothes = [];
+        globals.clothes = [];
         const shoesBrown = this.physics.add.sprite(0,0, 'shoesBrown', 18).setScale(.7).setVisible(false);
         shoesBrown.setOrigin(0,0);
         shoesBrown.setName('shoesBrown');
@@ -70,7 +81,7 @@ class Endless extends Phaser.Scene {
         const helmetArmor = this.physics.add.sprite(0,0, 'helmetArmor', 18).setScale(.7).setVisible(false);
         helmetArmor.setOrigin(0,0);
         helmetArmor.setName('helmetArmor');
-        clothes.push(shoesBrown, shoesArmor, pantsGreen, pantsArmor, shirtWhite, shirtArmor, helmetHood, helmetArmor);
+        globals.clothes.push(shoesBrown, shoesArmor, pantsGreen, pantsArmor, shirtWhite, shirtArmor, helmetHood, helmetArmor);
         
         //fixes player bounding box error
         this.time.addEvent({
@@ -82,50 +93,15 @@ class Endless extends Phaser.Scene {
         function delayDone () {
             this.player.body.setSize(33, 50);
             this.player.body.setOffset(16, 12);
-            for (let i = 0; i < clothes.length; i++) {
-                clothes[i].body.setSize(33, 50);
-                clothes[i].body.setOffset(16, 12);
+            for (let i = 0; i < globals.clothes.length; i++) {
+                globals.clothes[i].body.setSize(33, 50);
+                globals.clothes[i].body.setOffset(16, 12);
             }
         }
-        
-        globals.activeClothes.push(shirtWhite, pantsGreen, shoesBrown);
-
     }
 
     update () {
-
-        //checks for clothes
-        for (let i = 0; i < globals.activeClothes.length; i++) {
-            let clothes = globals.activeClothes[i]
-            clothes.setVisible(true);
-            clothes.setVelocityX(this.player.body.velocity.x);
-            clothes.setVelocityY(this.player.body.velocity.y);
-            clothes.setX(this.player.x);
-            clothes.setY(this.player.y);
-            let name = clothes.name;
-            if (this.player.anims.currentAnim) {
-                if (this.player.anims.currentAnim.key === 'walkRight') {
-                    clothes.play(`${name}Right`, true);
-                } else if (this.player.anims.currentAnim.key === 'walkLeft') {
-                    clothes.play(`${name}Left`, true);
-                } else if (this.player.anims.currentAnim.key === 'walkDown') {
-                    clothes.play(`${name}Down`, true);
-                } else if (this.player.anims.currentAnim.key === 'walkUp') {
-                    clothes.play(`${name}Up`, true);
-                } else if (this.player.anims.currentAnim.key === 'playerIdleRight') {
-                    clothes.play(`${name}IdleRight`, true);
-                } else if (this.player.anims.currentAnim.key === 'playerIdleLeft') {
-                    clothes.play(`${name}IdleLeft`, true);
-                } else if (this.player.anims.currentAnim.key === 'playerIdleUp') {
-                    clothes.play(`${name}IdleUp`, true);
-                } else if (this.player.anims.currentAnim.key === 'playerHurt') {
-                    clothes.play(`${name}Hurt`, true);
-                } else {
-                    clothes.play(`${name}Idle`, true);
-                }
-            }
-        }
-
+        
         //makes player walk
         if (this.cursors.down.isDown) {
             this.player.play('walkDown', true);
@@ -174,6 +150,36 @@ class Endless extends Phaser.Scene {
             }
         }
         
-    }
-
+        //checks for clothes
+        for (let i = 0; i < globals.activeClothes.length; i++) {
+            let clothes = globals.activeClothes[i]
+            clothes.setVisible(true);
+            clothes.setVelocityX(this.player.body.velocity.x);
+            clothes.setVelocityY(this.player.body.velocity.y);
+            clothes.setX(this.player.x);
+            clothes.setY(this.player.y);
+            let name = clothes.name;
+            if (this.player.anims.currentAnim) {
+                if (this.player.anims.currentAnim.key === 'walkRight') {
+                    clothes.play(`${name}Right`, true);
+                } else if (this.player.anims.currentAnim.key === 'walkLeft') {
+                    clothes.play(`${name}Left`, true);
+                } else if (this.player.anims.currentAnim.key === 'walkDown') {
+                    clothes.play(`${name}Down`, true);
+                } else if (this.player.anims.currentAnim.key === 'walkUp') {
+                    clothes.play(`${name}Up`, true);
+                } else if (this.player.anims.currentAnim.key === 'playerIdleRight') {
+                    clothes.play(`${name}IdleRight`, true);
+                } else if (this.player.anims.currentAnim.key === 'playerIdleLeft') {
+                    clothes.play(`${name}IdleLeft`, true);
+                } else if (this.player.anims.currentAnim.key === 'playerIdleUp') {
+                    clothes.play(`${name}IdleUp`, true);
+                } else if (this.player.anims.currentAnim.key === 'playerHurt') {
+                    clothes.play(`${name}Hurt`, true);
+                } else {
+                    clothes.play(`${name}Idle`, true);
+                }
+            }
+        }
+    }   
 }
