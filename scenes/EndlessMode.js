@@ -1,7 +1,10 @@
 const globals = {
     activeClothes: [],
+    clothesBought: [],
     shopCollision: true,
-    lives: 0  
+    maxLives: 3,
+    coins: 20000,
+    gems: 0
 }
 
 class Endless extends Phaser.Scene {
@@ -22,10 +25,30 @@ class Endless extends Phaser.Scene {
 
     create () {
 
+        //setup
+        this.startLoopPosistion = 150;
+        this.extraHearts = [];
+
+        //adds physics groups
+
         //adds player to screen
         this.player = this.physics.add.sprite(100, 100, 'player', 18).setScale(.7);
         this.player.setCollideWorldBounds(true);
         this.player.setOrigin(0,0);
+
+        //adds extraHearts
+        this.extraHeart1 = this.add.sprite(154, 471, 'extraHeart', 0).setVisible(false).setScrollFactor(0);
+        this.extraHeart2 = this.add.sprite(195, 471, 'extraHeart', 0).setVisible(false).setScrollFactor(0);
+        this.extraHeart3 = this.add.sprite(236, 471, 'extraHeart', 0).setVisible(false).setScrollFactor(0);
+        this.extraHeart4 = this.add.sprite(277, 471, 'extraHeart', 0).setVisible(false).setScrollFactor(0);
+        this.extraHeart5 = this.add.sprite(318, 471, 'extraHeart', 0).setVisible(false).setScrollFactor(0);
+        this.extraHeart6 = this.add.sprite(359, 471, 'extraHeart', 0).setVisible(false).setScrollFactor(0);
+        this.extraHeart7 = this.add.sprite(400, 471, 'extraHeart', 0).setVisible(false).setScrollFactor(0);
+        this.extraHeart8 = this.add.sprite(441, 471, 'extraHeart', 0).setVisible(false).setScrollFactor(0);
+        this.extraHeart9 = this.add.sprite(482, 471, 'extraHeart', 0).setVisible(false).setScrollFactor(0);
+        this.extraHeart10 = this.add.sprite(523, 471, 'extraHeart', 0).setVisible(false).setScrollFactor(0);
+        this.extraHeart11 = this.add.sprite(564, 471, 'extraHeart', 0).setVisible(false).setScrollFactor(0);
+        this.extraHeart12 = this.add.sprite(605, 471, 'extraHeart', 0).setVisible(false).setScrollFactor(0);
 
         //player camera and worldbounds setup
         this.cameras.main.setBounds(0,0,1500,1500);
@@ -36,6 +59,7 @@ class Endless extends Phaser.Scene {
         globals.GUIHearts = this.add.sprite(70, 470, 'hearts', 0).setScrollFactor(0);
         globals.GUICoins = this.add.sprite(10, 10, 'coin').setOrigin(0,0).setScale(1.7).setScrollFactor(0);
         globals.GUIGems = this.add.sprite(10, 45, 'gem').setOrigin(0,0).setScale(1.7).setScrollFactor(0);
+        updateScore(this);
         
         //adds cursors
         this.cursors = this.input.keyboard.createCursorKeys();
@@ -47,13 +71,38 @@ class Endless extends Phaser.Scene {
         this.shop = this.map.createStaticLayer('shop', [terrain], 0, 0).setDepth(-1);
         this.shop.setCollisionByProperty({collision: true});
         this.physics.add.collider(this.player, this.shop, () => {
-            this.player.setVelocityX(0);
-            this.player.setVelocityY(0);
+            if (this.cursors.down.isDown) {
+                this.cursors.down.isDown = false;
+                this.player.play('idle', true);
+                this.player.setVelocityY(0);
+            } else if (this.cursors.up.isDown) {
+                this.cursors.up.isDown = false;
+                this.player.play('playerIdleUp', true);
+                this.player.setVelocityY(0);
+            } else if (this.cursors.left.isDown) {
+                this.cursors.left.isDown = false;
+                this.player.play('playerIdleLeft', true);
+                this.player.setVelocityX(0);
+            } else if (this.cursors.right.isDown) {
+                this.cursors.right.isDown = false;
+                this.player.play('playerIdleRight', true);
+                this.player.setVelocityX(0);
+            }
             if (globals.shopCollision) {
                 this.scene.pause();
                 this.scene.launch('Shop');
+                this.time.addEvent({
+                    delay: 3000,
+                    callback: turnCollisionOn,
+                    callbackScope: this,
+                    loop: false
+                });
             }
         });
+
+        function turnCollisionOn () {
+            globals.shopCollision = true;
+        }
 
         //creates clothing sprites (push to globals.activeClothes to show on player)
         globals.clothes = [];
@@ -98,10 +147,67 @@ class Endless extends Phaser.Scene {
                 globals.clothes[i].body.setOffset(16, 12);
             }
         }
+
+        //adds updateText Method
+        function updateScore (scene) {
+            if(scene.coinText) {
+                scene.coinText.destroy();
+                scene.gemText.destroy();
+            }
+            scene.coinText = scene.add.text(45, 12, globals.coins, { fontSize: '20px', fill: '#00000', fontWeight: '700', fontFamily: 'Arial Black' }).setOrigin(0,0).setScrollFactor(0);
+            scene.gemText = scene.add.text(45, 47, globals.gems, { fontSize: '20px', fill: '#00000', fontWeight: '700', fontFamily: 'Arial Black' }).setOrigin(0,0).setScrollFactor(0);
+        }
+
     }
 
     update () {
-        
+
+        //updates score
+        if(this.coinText) {
+            this.coinText.destroy();
+            this.gemText.destroy();
+        }
+        this.coinText = this.add.text(45, 12, globals.coins, { fontSize: '20px', fill: '#00000', fontWeight: '700', fontFamily: 'Arial Black' }).setOrigin(0,0).setScrollFactor(0);
+        this.gemText = this.add.text(45, 47, globals.gems, { fontSize: '20px', fill: '#00000', fontWeight: '700', fontFamily: 'Arial Black' }).setOrigin(0,0).setScrollFactor(0);
+
+        //adds hearts for clothes
+        if (globals.maxLives > 3) {
+            this.extraHeart1.setVisible(true);
+        }
+        if (globals.maxLives > 4) {
+            this.extraHeart2.setVisible(true);
+        }
+        if (globals.maxLives > 5) {
+            this.extraHeart3.setVisible(true);
+        }
+        if (globals.maxLives > 6) {
+            this.extraHeart4.setVisible(true);
+        }
+        if (globals.maxLives > 7) {
+            this.extraHeart5.setVisible(true);
+        }
+        if (globals.maxLives > 8) {
+            this.extraHeart6.setVisible(true);
+        }
+        if (globals.maxLives > 9) {
+            this.extraHeart7.setVisible(true);
+        }
+        if (globals.maxLives > 10) {
+            this.extraHeart8.setVisible(true);
+        }
+        if (globals.maxLives > 11) {
+            this.extraHeart9.setVisible(true);
+        }
+        if (globals.maxLives > 12) {
+            this.extraHeart10.setVisible(true);
+        }
+        if (globals.maxLives > 13) {
+            this.extraHeart11.setVisible(true);
+        }
+        if (globals.maxLives > 14) {
+            this.extraHeart12.setVisible(true);
+        }
+
         //makes player walk
         if (this.cursors.down.isDown) {
             this.player.play('walkDown', true);
