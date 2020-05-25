@@ -627,6 +627,12 @@ class LoadingScene extends Phaser.Scene {
             frameRate: 10,
             frames: this.anims.generateFrameNames('shuriken', {start: 0, end: 2})
         });
+        this.anims.create({
+            key: 'shurikenBlue',
+            repeat: -1,
+            frameRate: 10,
+            frames: this.anims.generateFrameNames('shurikenBlue', {start: 0, end: 2})
+        });
 
         this.anims.create({
             key: 'walkDownShoes',

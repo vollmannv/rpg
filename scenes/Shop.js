@@ -26,6 +26,9 @@ class Shop extends Phaser.Scene {
         globals.GUICoins = this.add.sprite(10, 10, 'coin').setOrigin(0,0).setScale(1.7).setScrollFactor(0);
         globals.GUIGems = this.add.sprite(10, 45, 'gem').setOrigin(0,0).setScale(1.7).setScrollFactor(0);
         updateScore(this);
+        this.blackShurikenGUI = this.add.group();
+        this.blueShurikenGUI = this.add.group();
+        updateShuriken(this);
 
         //adds extraHearts
         this.extraHeart1 = this.add.sprite(154, 471, 'extraHeart', 0).setVisible(false).setScrollFactor(0);
@@ -97,10 +100,10 @@ class Shop extends Phaser.Scene {
         this.add.image(4*90+138, 328, 'gem').setScale(.7).setOrigin(0,0);
         
         if (!globals.clothesBought.includes('shoesBrown')) {
-            this.shoesBrownPrize = this.add.text(160, 202, '100', { fontSize: '10px', fill: '#00000', fontWeight: '700', fontFamily: 'Arial Black' }).setOrigin(0,0);
+            this.shoesBrownPrize = this.add.text(160, 202, '240', { fontSize: '10px', fill: '#00000', fontWeight: '700', fontFamily: 'Arial Black' }).setOrigin(0,0);
         }
         if (!globals.clothesBought.includes('shoesArmor')) {
-            this.shoesArmorPrize = this.add.text(90+160, 202, '500', { fontSize: '10px', fill: '#00000', fontWeight: '700', fontFamily: 'Arial Black' }).setOrigin(0,0);
+            this.shoesArmorPrize = this.add.text(90+160, 202, '800', { fontSize: '10px', fill: '#00000', fontWeight: '700', fontFamily: 'Arial Black' }).setOrigin(0,0);
         }
         if (!globals.clothesBought.includes('pantsGreen')) {
             this.pantsGreenPrize = this.add.text(180+160, 202, '100', { fontSize: '10px', fill: '#00000', fontWeight: '700', fontFamily: 'Arial Black' }).setOrigin(0,0);
@@ -127,27 +130,29 @@ class Shop extends Phaser.Scene {
         //adds button interactivity
         if (!globals.clothesBought.includes('shoesBrown')) {
             this.shoesBrownButton.on('pointerup', () => {
-                if (globals.coins >= 100) {
+                if (globals.coins >= 240) {
                     globals.activeClothes.push(globals.clothes[0]);
                     globals.clothesBought.push('shoesBrown');
-                    globals.coins -= 100;
+                    globals.coins -= 240;
                     globals.maxLives += 1;
                     updateScore(this);
                     this.shoesBrownButton.destroy();
                     this.shoesBrownPrize.destroy();
+                    globals.speed = 1.3;
                 }
             });
         }
         if (!globals.clothesBought.includes('shoesArmor')) {
             this.shoesArmorButton.on('pointerup', () => {
-                if (globals.coins >= 500) {
+                if (globals.coins >= 800) {
                     globals.activeClothes.push(globals.clothes[1]);
                     globals.clothesBought.push('shoesArmor');
-                    globals.coins -= 500;
+                    globals.coins -= 800;
                     globals.maxLives += 2;
                     updateScore(this);
                     this.shoesArmorButton.destroy();
                     this.shoesArmorPrize.destroy();
+                    globals.speed = 1.8;
                 }
             });
         }
@@ -230,6 +235,25 @@ class Shop extends Phaser.Scene {
             });
         }
 
+        this.shurikenBlueButton.on('pointerup', () => {
+            if (globals.gems >= 20) {
+                globals.shurikenBlueMax += 1;
+                globals.gems -= 20;
+                updateScore(this);
+                updateShuriken(this);
+                globals.updateShuriken = true;
+            }
+        });
+        this.shurikenButton.on('pointerup', () => {
+            if (globals.gems >= 7) {
+                globals.shurikenBlackMax += 1;
+                globals.gems -= 7;
+                updateScore(this);
+                updateShuriken(this);
+                globals.updateShuriken = true;
+            }
+        });
+
         //adds updateText Method
         function updateScore (scene) {
             if(scene.coinText) {
@@ -238,6 +262,17 @@ class Shop extends Phaser.Scene {
             }
             scene.coinText = scene.add.text(45, 12, globals.coins, { fontSize: '20px', fill: '#ffffff', fontWeight: '700', fontFamily: 'Arial Black' }).setOrigin(0,0).setScrollFactor(0);
             scene.gemText = scene.add.text(45, 47, globals.gems, { fontSize: '20px', fill: '#ffffff', fontWeight: '700', fontFamily: 'Arial Black' }).setOrigin(0,0).setScrollFactor(0);
+        }
+
+        //adds update shuriken method
+        function updateShuriken (scene) {
+
+            for (let i = 0; i < globals.shurikenBlackMax; i++) {
+                scene.add.sprite(15*i+10, 80, 'shuriken').setScale(2.5).setScrollFactor(0).setOrigin(0,0);
+            }
+            for (let i = 0; i < globals.shurikenBlueMax; i++) {
+                scene.add.sprite(15*i+10, 110, 'shurikenBlue').setScale(2.5).setScrollFactor(0).setOrigin(0,0);
+            }
         }
 
         //back button logic

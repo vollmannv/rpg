@@ -3,8 +3,13 @@ const globals = {
     clothesBought: [],
     shopCollision: true,
     maxLives: 3,
-    coins: 20000,
-    gems: 0
+    coins: 1000,
+    gems: 100,
+    currentShuriken: 'black',
+    shurikenBlackMax: 1,
+    shurikenBlueMax: 0,
+    speed: 1,
+    updateShuriken: false
 }
 
 class Endless extends Phaser.Scene {
@@ -28,8 +33,15 @@ class Endless extends Phaser.Scene {
         //setup
         this.startLoopPosistion = 150;
         this.extraHearts = [];
+        this.c = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.C);
 
         //adds physics groups
+        this.shurikenBlack = this.physics.add.group();
+        this.shurikenBlue = this.physics.add.group();
+        this.heartDrops = this.physics.add.group();
+        this.pauseGroup = this.add.group();
+        this.shurikenBlackGUI = this.add.group();
+        this.shurikenBlueGUI = this.add.group();
 
         //adds player to screen
         this.player = this.physics.add.sprite(100, 100, 'player', 18).setScale(.7);
@@ -60,6 +72,8 @@ class Endless extends Phaser.Scene {
         globals.GUICoins = this.add.sprite(10, 10, 'coin').setOrigin(0,0).setScale(1.7).setScrollFactor(0);
         globals.GUIGems = this.add.sprite(10, 45, 'gem').setOrigin(0,0).setScale(1.7).setScrollFactor(0);
         updateScore(this);
+        updateShuriken(this);
+
         
         //adds cursors
         this.cursors = this.input.keyboard.createCursorKeys();
@@ -70,6 +84,8 @@ class Endless extends Phaser.Scene {
         this.layer = this.map.createStaticLayer('layer', [terrain], 0, 0).setDepth(-1);
         this.shop = this.map.createStaticLayer('shop', [terrain], 0, 0).setDepth(-1);
         this.shop.setCollisionByProperty({collision: true});
+
+        //adds shop collision
         this.physics.add.collider(this.player, this.shop, () => {
             if (this.cursors.down.isDown) {
                 this.cursors.down.isDown = false;
@@ -99,7 +115,7 @@ class Endless extends Phaser.Scene {
                 });
             }
         });
-
+        
         function turnCollisionOn () {
             globals.shopCollision = true;
         }
@@ -147,7 +163,7 @@ class Endless extends Phaser.Scene {
                 globals.clothes[i].body.setOffset(16, 12);
             }
         }
-
+        
         //adds updateText Method
         function updateScore (scene) {
             if(scene.coinText) {
@@ -158,11 +174,52 @@ class Endless extends Phaser.Scene {
             scene.gemText = scene.add.text(45, 47, globals.gems, { fontSize: '20px', fill: '#00000', fontWeight: '700', fontFamily: 'Arial Black' }).setOrigin(0,0).setScrollFactor(0);
         }
 
+        //adds shuriken GUI
+        function updateShuriken (scene) {
+            scene.shurikenBlack.maxSize = globals.shurikenBlackMax;
+            scene.shurikenBlue.maxSize = globals.shurikenBlueMax;
+            scene.shurikenBlackGUI.getChildren().forEach(child => {
+                child.destroy();
+            });
+            scene.shurikenBlueGUI.getChildren().forEach(child => {
+                child.destroy();
+            });
+            for (let i = 0; i < globals.shurikenBlackMax; i++) {
+                scene.shurikenBlackGUI.create(15*i+10, 80, 'shuriken').setScale(2.5).setScrollFactor(0).setOrigin(0,0);
+            }
+            for (let i = 0; i < globals.shurikenBlueMax; i++) {
+                scene.shurikenBlueGUI.create(15*i+10, 110, 'shurikenBlue').setScale(2.5).setScrollFactor(0).setOrigin(0,0);
+            }
+        }
+        
     }
-
+    
     update () {
 
-        //updates score
+       //updates shuriken
+       if (globals.updateShuriken) {
+            this.shurikenBlack.maxSize = globals.shurikenBlackMax;
+            this.shurikenBlue.maxSize = globals.shurikenBlueMax;
+            this.shurikenBlackGUI.getChildren().forEach(child => {
+                child.destroy();
+            });
+            this.shurikenBlueGUI.getChildren().forEach(child => {
+                child.destroy();
+            });
+            for (let i = 0; i < globals.shurikenBlackMax; i++) {
+                this.shurikenBlackGUI.create(15*i+10, 80, 'shuriken').setScale(2.5).setScrollFactor(0).setOrigin(0,0);
+            }
+            for (let i = 0; i < globals.shurikenBlueMax; i++) {
+                this.shurikenBlueGUI.create(15*i+10, 110, 'shurikenBlue').setScale(2.5).setScrollFactor(0).setOrigin(0,0);
+            }
+            globals.updateShuriken = false;
+       }
+
+       //sets max size for shuriken
+       this.shurikenBlack.maxSize = globals.shurikenBlackMax;
+       this.shurikenBlue.maxSize = globals.shurikenBlueMax;
+
+       //updates score
         if(this.coinText) {
             this.coinText.destroy();
             this.gemText.destroy();
@@ -211,18 +268,18 @@ class Endless extends Phaser.Scene {
         //makes player walk
         if (this.cursors.down.isDown) {
             this.player.play('walkDown', true);
-            this.player.setVelocityY(80);
+            this.player.setVelocityY(80*globals.speed);
             this.player.setVelocityX(0);
         } else if (this.cursors.up.isDown) {
-            this.player.setVelocityY(-80);
+            this.player.setVelocityY(-80*globals.speed);
             this.player.play('walkUp', true);
             this.player.setVelocityX(0);
         } else if (this.cursors.left.isDown) {
-            this.player.setVelocityX(-80);
+            this.player.setVelocityX(-80*globals.speed);
             this.player.setVelocityY(0);
             this.player.play('walkLeft', true);
         } else if (this.cursors.right.isDown) {
-            this.player.setVelocityX(80);
+            this.player.setVelocityX(80*globals.speed);
             this.player.setVelocityY(0);
             this.player.play('walkRight', true);
         }
@@ -287,5 +344,103 @@ class Endless extends Phaser.Scene {
                 }
             }
         }
+
+        //sets active shuriken
+        if (Phaser.Input.Keyboard.JustDown(this.c)) {
+            if (globals.currentShuriken === 'black' && this.shurikenBlue.maxSize > 0) {
+                globals.currentShuriken = 'blue';
+            } else if (globals.currentShuriken === 'blue') {
+                globals.currentShuriken = 'black';
+            }
+        }
+
+        //shoots shuriken
+        if (Phaser.Input.Keyboard.JustDown(this.cursors.space)) {
+
+            if (globals.currentShuriken === 'black') {
+                if (this.shurikenBlack.getLength() < this.shurikenBlack.maxSize) {
+                    let newShuriken = this.shurikenBlack.create(this.player.body.x+4, this.player.body.y+14, 'shuriken', 0).setOrigin(0,0);
+                    this.shurikenBlackGUI.getLast(true).destroy();
+                    if (this.player.body.velocity.x > 0) {
+                        newShuriken.setVelocityX(150*globals.speed);
+                        newShuriken.play('shuriken', true);
+                    } else if (this.player.body.velocity.x < 0) {
+                        newShuriken.setVelocityX(-150*globals.speed);
+                        newShuriken.play('shuriken', true);
+                    } else if (this.player.body.velocity.y > 0) {
+                        newShuriken.setVelocityY(150*globals.speed);
+                        newShuriken.play('shuriken', true);
+                    } else if (this.player.body.velocity.y < 0) {
+                        newShuriken.setVelocityY(-150*globals.speed);
+                        newShuriken.play('shuriken', true);
+                    } else {
+                        newShuriken.setVelocityY(150*globals.speed);
+                        newShuriken.play('shuriken', true);
+                    }
+                }
+            } else if (globals.currentShuriken === 'blue') {
+                if (this.shurikenBlue.getLength() < this.shurikenBlue.maxSize) {
+                    let newShuriken = this.shurikenBlue.create(this.player.body.x+4, this.player.body.y+14, 'shurikenBlue', 0).setOrigin(0,0);
+                    this.shurikenBlueGUI.getLast(true).destroy();
+                    if (this.player.body.velocity.x > 0) {
+                        newShuriken.setVelocityX(200*globals.speed);
+                        newShuriken.play('shurikenBlue', true);
+                    } else if (this.player.body.velocity.x < 0) {
+                        newShuriken.setVelocityX(-200*globals.speed);
+                        newShuriken.play('shurikenBlue', true);
+                    } else if (this.player.body.velocity.y > 0) {
+                        newShuriken.setVelocityY(200*globals.speed);
+                        newShuriken.play('shurikenBlue', true);
+                    } else if (this.player.body.velocity.y < 0) {
+                        newShuriken.setVelocityY(-200*globals.speed);
+                        newShuriken.play('shurikenBlue', true);
+                    } else {
+                        newShuriken.setVelocityY(200*globals.speed);
+                        newShuriken.play('shurikenBlue', true);
+                    }
+                }
+            }
+            
+        }
+
+        //removes shuriken
+        this.shurikenBlack.getChildren().forEach(shuriken => {
+    
+            shuriken.body.setSize(12,12);
+    
+            shuriken.body.setCollideWorldBounds(false);
+            if (shuriken.y > (this.player.body.y + 350 )) {
+                shuriken.destroy();
+                this.shurikenBlackGUI.create(15*(this.shurikenBlack.maxSize-this.shurikenBlack.getLength()-1)+10, 80, 'shuriken').setScale(2.5).setScrollFactor(0).setOrigin(0,0);
+            } else if (shuriken.y < (this.player.body.y - 250)) {
+                shuriken.destroy();
+                this.shurikenBlackGUI.create(15*(this.shurikenBlack.maxSize-this.shurikenBlack.getLength()-1)+10, 80, 'shuriken').setScale(2.5).setScrollFactor(0).setOrigin(0,0);
+            } else if (shuriken.x > (this.player.body.x + 350)) {
+                shuriken.destroy();
+                this.shurikenBlackGUI.create(15*(this.shurikenBlack.maxSize-this.shurikenBlack.getLength()-1)+10, 80, 'shuriken').setScale(2.5).setScrollFactor(0).setOrigin(0,0);
+            } else if (shuriken.x < (this.player.body.x + -350)) {
+                shuriken.destroy();
+                this.shurikenBlackGUI.create(15*(this.shurikenBlack.maxSize-this.shurikenBlack.getLength()-1)+10, 80, 'shuriken').setScale(2.5).setScrollFactor(0).setOrigin(0,0);
+            }
+        });
+        this.shurikenBlue.getChildren().forEach(shuriken => {
+    
+            shuriken.body.setSize(12,12);
+    
+            shuriken.body.setCollideWorldBounds(false);
+            if (shuriken.y > (this.player.body.y + 350 )) {
+                shuriken.destroy();
+                this.shurikenBlueGUI.create(15*(this.shurikenBlue.maxSize-this.shurikenBlue.getLength()-1)+10, 110, 'shurikenBlue').setScale(2.5).setScrollFactor(0).setOrigin(0,0);
+            } else if (shuriken.y < (this.player.body.y - 250)) {
+                shuriken.destroy();
+                this.shurikenBlueGUI.create(15*(this.shurikenBlue.maxSize-this.shurikenBlue.getLength()-1)+10, 110, 'shurikenBlue').setScale(2.5).setScrollFactor(0).setOrigin(0,0);
+            } else if (shuriken.x > (this.player.body.x + 350)) {
+                shuriken.destroy();
+                this.shurikenBlueGUI.create(15*(this.shurikenBlue.maxSize-this.shurikenBlue.getLength()-1)+10, 110, 'shurikenBlue').setScale(2.5).setScrollFactor(0).setOrigin(0,0);
+            } else if (shuriken.x < (this.player.body.x + -350)) {
+                shuriken.destroy();
+                this.shurikenBlueGUI.create(15*(this.shurikenBlue.maxSize-this.shurikenBlue.getLength()-1)+10, 110, 'shurikenBlue').setScale(2.5).setScrollFactor(0).setOrigin(0,0);
+            }
+        });
     }   
 }
