@@ -529,6 +529,7 @@ class Endless extends Phaser.Scene {
                 globals.currentWave++;
                 globals.enemiesKilled = 0;
                 globals.maxEnemies = 0;
+                globals.enemyCount = 0;
             }
         } else if (globals.currentWave === 2) {
             if (globals.maxEnemies === 0) {
@@ -538,6 +539,7 @@ class Endless extends Phaser.Scene {
                 globals.currentWave++;
                 globals.enemiesKilled = 0;
                 globals.maxEnemies = 0;
+                globals.enemyCount = 0;
             }
         } else if (globals.currentWave === 3) {
             if (globals.maxEnemies === 0) {
@@ -547,6 +549,7 @@ class Endless extends Phaser.Scene {
                 globals.currentWave++;
                 globals.enemiesKilled = 0;
                 globals.maxEnemies = 0;
+                globals.enemyCount = 0;
             }
         } else if (globals.currentWave === 4) {
             if (globals.maxEnemies === 0) {
@@ -556,6 +559,7 @@ class Endless extends Phaser.Scene {
                 globals.currentWave++;
                 globals.enemiesKilled = 0;
                 globals.maxEnemies = 0;
+                globals.enemyCount = 0;
             }
         } else if (globals.currentWave === 5) {
             if (globals.maxEnemies === 0) {
@@ -565,6 +569,7 @@ class Endless extends Phaser.Scene {
                 globals.currentWave++;
                 globals.enemiesKilled = 0;
                 globals.maxEnemies = 0;
+                globals.enemyCount = 0;
             }
         } else if (globals.currentWave === 6) {
             if (globals.maxEnemies === 0) {
@@ -575,6 +580,7 @@ class Endless extends Phaser.Scene {
                 globals.currentWave++;
                 globals.enemiesKilled = 0;
                 globals.maxEnemies = 0;
+                globals.enemyCount = 0;
             }
         } else if (globals.currentWave > 6) {
             if (globals.maxEnemies === 0) {
@@ -584,6 +590,7 @@ class Endless extends Phaser.Scene {
                 globals.currentWave++;
                 globals.enemiesKilled = 0;
                 globals.maxEnemies = 0;
+                globals.enemyCount = 0;
             }
         }
         
