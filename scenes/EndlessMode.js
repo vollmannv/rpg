@@ -863,7 +863,7 @@ class Endless extends Phaser.Scene {
                     }
                 }
     
-            let randNum = Math.floor(Math.random() * 1000)
+            let randNum = Math.floor(Math.random() * 645)
             if (randNum === 1) {
                 if (Math.abs(skeleton.body.velocity.x) > Math.abs(skeleton.body.velocity.y)) {
                     if (skeleton.body.velocity.x > 0) {
@@ -948,7 +948,7 @@ class Endless extends Phaser.Scene {
                 }
             }
     
-            let randNum = Math.floor(Math.random() * 1000)
+            let randNum = Math.floor(Math.random() * 700)
             if (randNum === 1) {
                 if (Math.abs(skeleton.body.velocity.x) > Math.abs(skeleton.body.velocity.y)) {
                     if (skeleton.body.velocity.x > 0) {
