@@ -21,119 +21,7 @@ class Scene1 extends Phaser.Scene {
     }
 
     create() {
-        
-        //creates player animations
-        this.anims.create({
-            key: 'walkDown',
-            repeat: -1,
-            frameRate: 10,
-            frames: this.anims.generateFrameNames('player', {start: 19, end: 26})
-        });
-        this.anims.create({
-            key: 'walkUp',
-            repeat: -1,
-            frameRate: 10,
-            frames: this.anims.generateFrameNames('player', {start: 0, end: 8})
-        });
-        this.anims.create({
-            key: 'walkLeft',
-            repeat: -1,
-            frameRate: 10,
-            frames: this.anims.generateFrameNames('player', {start: 9, end: 17})
-        });
-        this.anims.create({
-            key: 'walkRight',
-            repeat: -1,
-            frameRate: 10,
-            frames: this.anims.generateFrameNames('player', {start: 27, end: 35})
-        });
-        this.anims.create({
-            key: 'idle',
-            repeat: -1,
-            frameRate: 1,
-            frames: this.anims.generateFrameNames('player', {start: 18, end: 19})
-        });
-        this.anims.create({
-            key: 'playerHurt',
-            repeat: 0,
-            frameRate: 10,
-            frames: this.anims.generateFrameNames('playerHurt', {start: 0, end: 5})
-        });
-        this.anims.create({
-            key: 'shuriken',
-            repeat: -1,
-            frameRate: 10,
-            frames: this.anims.generateFrameNames('shuriken', {start: 0, end: 2})
-        });
-        this.anims.create({
-            key: 'playerIdleLeft',
-            repeat: -1,
-            frameRate: 1,
-            frames: this.anims.generateFrameNames('player', {start: 9, end: 9})
-        });
-        this.anims.create({
-            key: 'playerIdleRight',
-            repeat: -1,
-            frameRate: 1,
-            frames: this.anims.generateFrameNames('player', {start: 27, end: 27})
-        });
-        this.anims.create({
-            key: 'playerIdleUp',
-            repeat: -1,
-            frameRate: 1,
-            frames: this.anims.generateFrameNames('player', {start: 0, end: 1})
-        });
 
-        //creates skeleton animations
-        this.anims.create({
-            key: 'skeletonLeft',
-            repeat: -1,
-            frameRate: 7,
-            frames: this.anims.generateFrameNames('skeleton', {start: 9, end: 17})
-        });
-        this.anims.create({
-            key: 'skeletonRight',
-            repeat: -1,
-            frameRate: 7,
-            frames: this.anims.generateFrameNames('skeleton', {start: 27, end: 35})
-        });
-        this.anims.create({
-            key: 'skeletonUp',
-            repeat: -1,
-            frameRate: 7,
-            frames: this.anims.generateFrameNames('skeleton', {start: 0, end: 8})
-        });
-        this.anims.create({
-            key: 'skeletonDown',
-            repeat: -1,
-            frameRate: 7,
-            frames: this.anims.generateFrameNames('skeleton', {start: 19, end: 26})
-        });
-        this.anims.create({
-            key: 'fireballDown',
-            repeat: -1,
-            frameRate: 10,
-            frames: this.anims.generateFrameNames('fireball', {start: 48, end: 55})
-        });
-        this.anims.create({
-            key: 'fireballUp',
-            repeat: -1,
-            frameRate: 10,
-            frames: this.anims.generateFrameNames('fireball', {start: 16, end: 23})
-        });
-        this.anims.create({
-            key: 'fireballLeft',
-            repeat: -1,
-            frameRate: 10,
-            frames: this.anims.generateFrameNames('fireball', {start: 0, end: 7})
-        });
-        this.anims.create({
-            key: 'fireballRight',
-            repeat: -1,
-            frameRate: 10,
-            frames: this.anims.generateFrameNames('fireball', {start: 32, end: 39})
-        });
-        
         //setup
         this.physics.world.setBounds(0, 0, 1280, 1280);
         gameState.score = 0;
@@ -337,9 +225,7 @@ class Scene1 extends Phaser.Scene {
                 gameState.player.setVelocityY(-80);
                 gameState.player.play('walkUp', true);
                 gameState.player.setVelocityX(0);
-            } 
-            
-            if (gameState.cursors.left.isDown) {
+            } else if (gameState.cursors.left.isDown) {
                 gameState.player.setVelocityX(-80);
                 gameState.player.setVelocityY(0);
                 gameState.player.play('walkLeft', true);

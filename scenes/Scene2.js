@@ -21,118 +21,6 @@ class Scene2 extends Phaser.Scene {
     }
 
     create() {
-
-        //creates player animations
-        this.anims.create({
-            key: 'walkDownShoes',
-            repeat: -1,
-            frameRate: 13,
-            frames: this.anims.generateFrameNames('playerShoes', {start: 19, end: 26})
-        });
-        this.anims.create({
-            key: 'walkUpShoes',
-            repeat: -1,
-            frameRate: 13,
-            frames: this.anims.generateFrameNames('playerShoes', {start: 0, end: 8})
-        });
-        this.anims.create({
-            key: 'walkLeftShoes',
-            repeat: -1,
-            frameRate: 13,
-            frames: this.anims.generateFrameNames('playerShoes', {start: 9, end: 17})
-        });
-        this.anims.create({
-            key: 'walkRightShoes',
-            repeat: -1,
-            frameRate: 13,
-            frames: this.anims.generateFrameNames('playerShoes', {start: 27, end: 35})
-        });
-        this.anims.create({
-            key: 'idleShoes',
-            repeat: -1,
-            frameRate: 1,
-            frames: this.anims.generateFrameNames('playerShoes', {start: 18, end: 19})
-        });
-        this.anims.create({
-            key: 'playerShoesHurt',
-            repeat: 0,
-            frameRate: 10,
-            frames: this.anims.generateFrameNames('playerShoesHurt', {start: 0, end: 5})
-        });
-        this.anims.create({
-            key: 'shuriken',
-            repeat: -1,
-            frameRate: 10,
-            frames: this.anims.generateFrameNames('shuriken', {start: 0, end: 2})
-        });
-        this.anims.create({
-            key: 'playerShoesIdleLeft',
-            repeat: -1,
-            frameRate: 1,
-            frames: this.anims.generateFrameNames('playerShoes', {start: 9, end: 9})
-        });
-        this.anims.create({
-            key: 'playerShoesIdleRight',
-            repeat: -1,
-            frameRate: 1,
-            frames: this.anims.generateFrameNames('playerShoes', {start: 27, end: 27})
-        });
-        this.anims.create({
-            key: 'playerShoesIdleUp',
-            repeat: -1,
-            frameRate: 1,
-            frames: this.anims.generateFrameNames('playerShoes', {start: 0, end: 1})
-        });
-
-        //creates skeleton animations
-        this.anims.create({
-            key: 'skeletonLeft',
-            repeat: -1,
-            frameRate: 7,
-            frames: this.anims.generateFrameNames('skeleton', {start: 9, end: 17})
-        });
-        this.anims.create({
-            key: 'skeletonRight',
-            repeat: -1,
-            frameRate: 7,
-            frames: this.anims.generateFrameNames('skeleton', {start: 27, end: 35})
-        });
-        this.anims.create({
-            key: 'skeletonUp',
-            repeat: -1,
-            frameRate: 7,
-            frames: this.anims.generateFrameNames('skeleton', {start: 0, end: 8})
-        });
-        this.anims.create({
-            key: 'skeletonDown',
-            repeat: -1,
-            frameRate: 7,
-            frames: this.anims.generateFrameNames('skeleton', {start: 19, end: 26})
-        });
-        this.anims.create({
-            key: 'fireballDown',
-            repeat: -1,
-            frameRate: 10,
-            frames: this.anims.generateFrameNames('fireball', {start: 48, end: 55})
-        });
-        this.anims.create({
-            key: 'fireballUp',
-            repeat: -1,
-            frameRate: 10,
-            frames: this.anims.generateFrameNames('fireball', {start: 16, end: 23})
-        });
-        this.anims.create({
-            key: 'fireballLeft',
-            repeat: -1,
-            frameRate: 10,
-            frames: this.anims.generateFrameNames('fireball', {start: 0, end: 7})
-        });
-        this.anims.create({
-            key: 'fireballRight',
-            repeat: -1,
-            frameRate: 10,
-            frames: this.anims.generateFrameNames('fireball', {start: 32, end: 39})
-        });
         
         //adds player
         gameState2.player = this.physics.add.sprite(200, 180, 'playerShoes', 18).setScale(.7);
@@ -338,9 +226,7 @@ class Scene2 extends Phaser.Scene {
                 gameState2.player.setVelocityY(-110);
                 gameState2.player.play('walkUpShoes', true);
                 gameState2.player.setVelocityX(0);
-            } 
-            
-            if (gameState2.cursors.left.isDown) {
+            } else if (gameState2.cursors.left.isDown) {
                 gameState2.player.setVelocityX(-110);
                 gameState2.player.setVelocityY(0);
                 gameState2.player.play('walkLeftShoes', true);

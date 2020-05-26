@@ -30,6 +30,8 @@ class MenuScene extends Phaser.Scene {
         menuState.levelButton.setOrigin(0,0);
         menuState.creditsButton = this.add.image(240, 365, 'creditsButton').setScale(.7);
         menuState.creditsButton.setOrigin(0,0);
+        menuState.endlessButton = this.add.image(20, 380, 'endlessButton').setScale(.4);
+        menuState.endlessButton.setOrigin(0,0);
 
         //redirects to next page
         menuState.playButton.setInteractive();
@@ -40,6 +42,10 @@ class MenuScene extends Phaser.Scene {
         menuState.levelButton.on('pointerup', () => {
             this.scene.start('Level Selection');
         });
+        menuState.endlessButton.setInteractive();
+        menuState.endlessButton.on('pointerup', () => {
+            this.scene.start('Endless');
+        })
 
 
     }
