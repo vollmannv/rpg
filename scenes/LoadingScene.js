@@ -76,10 +76,10 @@ class LoadingScene extends Phaser.Scene {
         this.load.image('level4Text', 'screens/level4_text.png');
 
         //loads items for endless mode
-        this.load.image('blueChest', 'items/ChestBlue.png');
-        this.load.image('yellowChest', 'items/ChestYellow.png');
-        this.load.image('redChest', 'items/ChestRed.png');
-        this.load.image('greenChest', 'items/ChestGreen.png');
+        this.load.image('chestBlue', 'items/ChestBlue.png');
+        this.load.image('chestYellow', 'items/ChestYellow.png');
+        this.load.image('chestRed', 'items/ChestRed.png');
+        this.load.image('chestGreen', 'items/ChestGreen.png');
         this.load.image('coin', 'items/Coin.png');
         this.load.image('gem', 'items/Gem.png');
 

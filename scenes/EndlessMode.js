@@ -9,7 +9,16 @@ const globals = {
     shurikenBlackMax: 1,
     shurikenBlueMax: 0,
     speed: 1,
-    updateShuriken: false
+    updateShuriken: false,
+    currentWave: 1,
+    maxEnemies: 20,
+    enemyCount: 0,
+    enemiesKilled: 0,
+    skeletonNormalSpawnRate: 5000,
+    skeletonArmorSpawnRate: 0,
+    skeletonHatSpawnRate: 0,
+    score: 0,
+    pauseOn: false
 }
 
 class Endless extends Phaser.Scene {
@@ -34,6 +43,8 @@ class Endless extends Phaser.Scene {
         this.startLoopPosistion = 150;
         this.extraHearts = [];
         this.c = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.C);
+        globals.scoreText = this.add.text(10,400, '',{ fontSize: '20px', fill: '#00000', fontWeight: '700', fontFamily: 'Arial Black' }).setOrigin(0,0).setScrollFactor(0);
+        this.lives = 3;
 
         //adds physics groups
         this.shurikenBlack = this.physics.add.group();
@@ -42,11 +53,18 @@ class Endless extends Phaser.Scene {
         this.pauseGroup = this.add.group();
         this.shurikenBlackGUI = this.add.group();
         this.shurikenBlueGUI = this.add.group();
+        globals.skeletonsNormal = this.physics.add.group();
+        globals.skeletonsArmor = this.physics.add.group();
+        globals.skeletonsSmall = this.physics.add.group();
+        globals.skeletonAttack = this.physics.add.group();
+        this.chestsBlue = this.physics.add.group();
+        this.chestsGreen = this.physics.add.group();
+        this.chestsRed = this.physics.add.group();
 
         //adds player to screen
-        this.player = this.physics.add.sprite(100, 100, 'player', 18).setScale(.7);
-        this.player.setCollideWorldBounds(true);
-        this.player.setOrigin(0,0);
+        globals.player = this.physics.add.sprite(100, 100, 'player', 18).setScale(.7);
+        globals.player.setCollideWorldBounds(true);
+        globals.player.setOrigin(0,0);
 
         //adds extraHearts
         this.extraHeart1 = this.add.sprite(154, 471, 'extraHeart', 0).setVisible(false).setScrollFactor(0);
@@ -64,16 +82,15 @@ class Endless extends Phaser.Scene {
 
         //player camera and worldbounds setup
         this.cameras.main.setBounds(0,0,1500,1500);
-        this.cameras.main.startFollow(this.player, 480, 320);
+        this.cameras.main.startFollow(globals.player, 480, 320);
         this.physics.world.setBounds(0,0,1500,1500);
 
         //GUI
         globals.GUIHearts = this.add.sprite(70, 470, 'hearts', 0).setScrollFactor(0);
         globals.GUICoins = this.add.sprite(10, 10, 'coin').setOrigin(0,0).setScale(1.7).setScrollFactor(0);
         globals.GUIGems = this.add.sprite(10, 45, 'gem').setOrigin(0,0).setScale(1.7).setScrollFactor(0);
-        updateScore(this);
+        updateMoney(this);
         updateShuriken(this);
-
         
         //adds cursors
         this.cursors = this.input.keyboard.createCursorKeys();
@@ -86,23 +103,23 @@ class Endless extends Phaser.Scene {
         this.shop.setCollisionByProperty({collision: true});
 
         //adds shop collision
-        this.physics.add.collider(this.player, this.shop, () => {
+        this.physics.add.collider(globals.player, this.shop, () => {
             if (this.cursors.down.isDown) {
                 this.cursors.down.isDown = false;
-                this.player.play('idle', true);
-                this.player.setVelocityY(0);
+                globals.player.play('idle', true);
+                globals.player.setVelocityY(0);
             } else if (this.cursors.up.isDown) {
                 this.cursors.up.isDown = false;
-                this.player.play('playerIdleUp', true);
-                this.player.setVelocityY(0);
+                globals.player.play('playerIdleUp', true);
+                globals.player.setVelocityY(0);
             } else if (this.cursors.left.isDown) {
                 this.cursors.left.isDown = false;
-                this.player.play('playerIdleLeft', true);
-                this.player.setVelocityX(0);
+                globals.player.play('playerIdleLeft', true);
+                globals.player.setVelocityX(0);
             } else if (this.cursors.right.isDown) {
                 this.cursors.right.isDown = false;
-                this.player.play('playerIdleRight', true);
-                this.player.setVelocityX(0);
+                globals.player.play('playerIdleRight', true);
+                globals.player.setVelocityX(0);
             }
             if (globals.shopCollision) {
                 this.scene.pause();
@@ -156,8 +173,8 @@ class Endless extends Phaser.Scene {
             loop: false
         });
         function delayDone () {
-            this.player.body.setSize(33, 50);
-            this.player.body.setOffset(16, 12);
+            globals.player.body.setSize(33, 50);
+            globals.player.body.setOffset(16, 12);
             for (let i = 0; i < globals.clothes.length; i++) {
                 globals.clothes[i].body.setSize(33, 50);
                 globals.clothes[i].body.setOffset(16, 12);
@@ -165,7 +182,7 @@ class Endless extends Phaser.Scene {
         }
         
         //adds updateText Method
-        function updateScore (scene) {
+        function updateMoney (scene) {
             if(scene.coinText) {
                 scene.coinText.destroy();
                 scene.gemText.destroy();
@@ -191,10 +208,385 @@ class Endless extends Phaser.Scene {
                 scene.shurikenBlueGUI.create(15*i+10, 110, 'shurikenBlue').setScale(2.5).setScrollFactor(0).setOrigin(0,0);
             }
         }
+
+        //adds wave text
+        this.scoreTextEvent = this.time.addEvent({
+            delay: 1000,
+            callback: updateScore,
+            callbackScope: this,
+            loop: true
+        });
+        function updateScore() {
+            if (globals.pauseOn === false) {
+                globals.score++;
+                globals.scoreText.setText(`Score: ${globals.score}\nWave: ${globals.currentWave}`);
+            }
+        }
+
+        //skeleton gen
+        this.normalSkeletonLoop = this.time.addEvent({
+            delay: 1000,
+            callback: skeletonGen,
+            callbackScope: this,
+            loop: true
+        });
+        this.armorSkeletonLoop = this.time.addEvent({
+            delay: 1000,
+            callback: skeletonArmorGen,
+            callbackScope: this,
+            loop: true
+        });
+        this.smallSkeletonLoop = this.time.addEvent({
+            delay: 1000,
+            callback: skeletonSmallGen,
+            callbackScope: this,
+            loop: true
+        });
+
+        function skeletonGen () {
+            let x = Math.floor(Math.random()*1500);
+            let y = Math.floor(Math.random()*1500);
+            let playerX = globals.player.body.x;
+            let playerY = globals.player.body.y;
+            if (x <= playerX) {
+                x -= - 100;
+            } else if (x > playerX) {
+                x += 100;
+            }
+            if (y <= playerY) {
+                y -= 100;
+            } else if (y > playerY) {
+                y += 100;
+            }
+            
+            if (globals.enemyCount < globals.maxEnemies) {
+                globals.skeletonsNormal.create(x, y, 'skeleton', 18).setScale(.55);
+                globals.enemyCount++;
+            }
+        }
+        function skeletonArmorGen () {
+            let x = Math.floor(Math.random()*1500);
+            let y = Math.floor(Math.random()*1500);
+            let playerX = globals.player.body.x;
+            let playerY = globals.player.body.y;
+            if (x <= playerX) {
+                x -= - 100;
+            } else if (x > playerX) {
+                x += 100;
+            }
+            if (y <= playerY) {
+                y -= 100;
+            } else if (y > playerY) {
+                y += 100;
+            }
+            
+            if (globals.currentWave > 4) {
+                if (globals.enemyCount < globals.maxEnemies) {
+                    var newSkeleton = globals.skeletonsArmor.create(x, y, 'skeletonArmor', 18).setScale(.9);
+                    newSkeleton.setData('health', 2);
+                    globals.enemyCount++;
+                }
+            }
+        }
+        function skeletonSmallGen () {
+            let x = Math.floor(Math.random()*1500);
+            let y = Math.floor(Math.random()*1500);
+            let playerX = globals.player.body.x;
+            let playerY = globals.player.body.y;
+            if (x <= playerX) {
+                x -= - 100;
+            } else if (x > playerX) {
+                x += 100;
+            }
+            if (y <= playerY) {
+                y -= 100;
+            } else if (y > playerY) {
+                y += 100;
+            }
+            if (globals.currentWave > 2) {
+                if (globals.enemyCount < globals.maxEnemies) {
+                    globals.skeletonsSmall.create(x, y, 'skeletonHat', 18).setScale(.4);
+                    globals.enemyCount++;
+                }
+            }
+        }
+
+        //sets collisions
+        this.physics.add.collider(globals.player, globals.skeletonsNormal, (player, skeleton) => {
+            this.lives--;
+            skeleton.destroy();
+            globals.enemiesKilled++;
+        });
+        this.physics.add.collider(globals.player, globals.skeletonsArmor, (player, skeleton) => {
+            this.lives -= 2;
+            skeleton.destroy();
+            globals.enemiesKilled++;
+        });
+        this.physics.add.collider(globals.player, globals.skeletonsSmall, (player, skeleton) => {
+            this.lives--;
+            skeleton.destroy();
+            globals.enemiesKilled++;
+        })
         
+        this.physics.add.collider(globals.player, globals.skeletonAttack, (player, fireball) => {
+            this.lives--;
+            fireball.destroy();
+        });
+        
+        this.physics.add.collider(globals.skeletonsNormal, this.shurikenBlack, (skeleton, shuriken) => {
+            skeleton.destroy();
+            shuriken.destroy();
+            this.shurikenBlackGUI.create(15*(this.shurikenBlack.maxSize-this.shurikenBlack.getLength()-1)+10, 80, 'shuriken').setScale(2.5).setScrollFactor(0).setOrigin(0,0);
+            
+            globals.score += 10;
+            
+            const randomNumber = Math.floor(Math.random() * 10);
+            if (this.lives < globals.maxLives) {
+                if (randomNumber === 1) {
+                    this.heartDrops.create(skeleton.x, skeleton.y, 'singleHeart').setScale(.35);
+                }
+            }
+            if (randomNumber === 2 || randomNumber === 3 || randomNumber === 4) {
+                this.chestsBlue.create(skeleton.x, skeleton.y, 'chestBlue').setScale(.7);
+            } else if (randomNumber === 5 || randomNumber === 6) {
+                this.chestsGreen.create(skeleton.x, skeleton.y, 'chestGreen').setScale(.7);
+            } else if (randomNumber === 7) {
+                this.chestsRed.create(skeleton.x, skeleton.y, 'chestRed').setScale(.7);
+            }         
+            globals.enemiesKilled++;
+            updateScore();
+        });
+
+        this.physics.add.collider(globals.skeletonsArmor, this.shurikenBlack, (skeleton, shuriken) => {
+            
+            let health = skeleton.getData('health');
+            health--;
+            skeleton.setData('health', health);
+            if (health === 0) {
+                skeleton.destroy();
+                globals.score += 50;
+                    
+                const randomNumber = Math.floor(Math.random() * 10);
+                if (this.lives < globals.maxLives) {
+                    if (randomNumber === 1) {
+                        this.heartDrops.create(skeleton.x, skeleton.y, 'singleHeart').setScale(.35);
+                    }
+                }
+                if (randomNumber === 2 || randomNumber === 3 || randomNumber === 4) {
+                    this.chestsBlue.create(skeleton.x, skeleton.y, 'chestBlue').setScale(.7);
+                } else if (randomNumber === 5 || randomNumber === 6) {
+                    this.chestsGreen.create(skeleton.x, skeleton.y, 'chestGreen').setScale(.7);
+                } else if (randomNumber === 7) {
+                    this.chestsRed.create(skeleton.x, skeleton.y, 'chestRed').setScale(.7);
+                }
+                    
+                globals.enemesKilled++;
+                updateScore();
+            }
+            shuriken.destroy();
+            this.shurikenBlackGUI.create(15*(this.shurikenBlack.maxSize-this.shurikenBlack.getLength()-1)+10, 80, 'shuriken').setScale(2.5).setScrollFactor(0).setOrigin(0,0);
+        });
+
+        this.physics.add.collider(globals.skeletonsSmall, this.shurikenBlack, (skeleton, shuriken) => {
+            skeleton.destroy();
+            shuriken.destroy();
+            this.shurikenBlackGUI.create(15*(this.shurikenBlack.maxSize-this.shurikenBlack.getLength()-1)+10, 80, 'shuriken').setScale(2.5).setScrollFactor(0).setOrigin(0,0);
+            
+            globals.score += 10;
+            
+            const randomNumber = Math.floor(Math.random() * 10);
+            if (this.lives < globals.maxLives) {
+                if (randomNumber === 1) {
+                    this.heartDrops.create(skeleton.x, skeleton.y, 'singleHeart').setScale(.35);
+                }
+            }
+            if (randomNumber === 2 || randomNumber === 3 || randomNumber === 4) {
+                this.chestsBlue.create(skeleton.x, skeleton.y, 'chestBlue').setScale(.7);
+            } else if (randomNumber === 5 || randomNumber === 6) {
+                this.chestsGreen.create(skeleton.x, skeleton.y, 'chestGreen').setScale(.7);
+            } else if (randomNumber === 7) {
+                this.chestsRed.create(skeleton.x, skeleton.y, 'chestRed').setScale(.7);
+            }
+            
+            globals.enemiesKilled++;
+            updateScore();
+        });
+
+        this.physics.add.collider(globals.skeletonsNormal, this.shurikenBlue, (skeleton, shuriken) => {
+            skeleton.destroy();
+            globals.score += 10;
+            
+            const randomNumber = Math.floor(Math.random() * 10);
+            if (this.lives < globals.maxLives) {
+                if (randomNumber === 1) {
+                    this.heartDrops.create(skeleton.x, skeleton.y, 'singleHeart').setScale(.35);
+                }
+            }
+            if (randomNumber === 2 || randomNumber === 3 || randomNumber === 4) {
+                this.chestsBlue.create(skeleton.x, skeleton.y, 'chestBlue').setScale(.7);
+            } else if (randomNumber === 5 || randomNumber === 6) {
+                this.chestsGreen.create(skeleton.x, skeleton.y, 'chestGreen').setScale(.7);
+            } else if (randomNumber === 7) {
+                this.chestsRed.create(skeleton.x, skeleton.y, 'chestRed').setScale(.7);
+            }         
+            globals.enemiesKilled++;
+            updateScore();
+        });
+
+        this.physics.add.collider(globals.skeletonsArmor, this.shurikenBlue, (skeleton, shuriken) => {
+            
+            let health = skeleton.getData('health');
+            health--;
+            skeleton.setData('health', health);
+            if (health === 0) {
+                skeleton.destroy();
+                globals.score += 50;
+                    
+                const randomNumber = Math.floor(Math.random() * 10);
+                if (this.lives < globals.maxLives) {
+                    if (randomNumber === 1) {
+                        this.heartDrops.create(skeleton.x, skeleton.y, 'singleHeart').setScale(.35);
+                    }
+                }
+                if (randomNumber === 2 || randomNumber === 3 || randomNumber === 4) {
+                    this.chestsBlue.create(skeleton.x, skeleton.y, 'chestBlue').setScale(.7);
+                } else if (randomNumber === 5 || randomNumber === 6) {
+                    this.chestsGreen.create(skeleton.x, skeleton.y, 'chestGreen').setScale(.7);
+                } else if (randomNumber === 7) {
+                    this.chestsRed.create(skeleton.x, skeleton.y, 'chestRed').setScale(.7);
+                }
+                    
+                globals.enemesKilled++;
+                updateScore();
+            }
+        });
+
+        this.physics.add.collider(globals.skeletonsSmall, this.shurikenBlue, (skeleton, shuriken) => {
+            skeleton.destroy();
+            globals.score += 10;
+            
+            const randomNumber = Math.floor(Math.random() * 10);
+            if (this.lives < globals.maxLives) {
+                if (randomNumber === 1) {
+                    this.heartDrops.create(skeleton.x, skeleton.y, 'singleHeart').setScale(.35);
+                }
+            }
+            if (randomNumber === 2 || randomNumber === 3 || randomNumber === 4) {
+                this.chestsBlue.create(skeleton.x, skeleton.y, 'chestBlue').setScale(.7);
+            } else if (randomNumber === 5 || randomNumber === 6) {
+                this.chestsGreen.create(skeleton.x, skeleton.y, 'chestGreen').setScale(.7);
+            } else if (randomNumber === 7) {
+                this.chestsRed.create(skeleton.x, skeleton.y, 'chestRed').setScale(.7);
+            }
+            
+            globals.enemiesKilled++;
+            updateScore();
+        });
+
+        this.physics.add.collider(globals.player, this.heartDrops, (player, heart) => {
+            heart.destroy();
+            this.lives++;
+        });
+
+        this.physics.add.collider(globals.player, this.chestsBlue, (player, chest) => {
+            const coinIncrease = Math.floor(Math.random() * 10);
+            const gemIncrease = Math.floor(Math.random() * 3);
+            globals.coins += coinIncrease;
+            globals.gems += gemIncrease;
+            chest.destroy();
+            updateMoney(this);
+        });
+        this.physics.add.collider(globals.player, this.chestsGreen, (player, chest) => {
+            const coinIncrease = Math.floor(Math.random() * 30);
+            const gemIncrease = Math.floor(Math.random() * 6);
+            globals.coins += coinIncrease;
+            globals.gems += gemIncrease;
+            chest.destroy();
+            updateMoney(this);
+        });
+        this.physics.add.collider(globals.player, this.chestsRed, (player, chest) => {
+            const coinIncrease = Math.floor(Math.random() * 50);
+            const gemIncrease = Math.floor(Math.random() * 10);
+            globals.coins += coinIncrease;
+            globals.gems += gemIncrease;
+            chest.destroy();
+            updateMoney(this);
+        });
     }
     
     update () {
+        
+
+        //spawnRates on waves
+        this.normalSkeletonLoop.delay = globals.skeletonNormalSpawnRate;
+        this.armorSkeletonLoop.delay = globals.skeletonArmorSpawnRate;
+        this.smallSkeletonLoop.delay = globals.skeletonSmallSpawnRate;
+        globals.skeletonNormalSpawnRate = 6000;
+        globals.skeletonArmorSpawnRate = 12000;
+        globals.skeletonSmallSpawnRate = 6000;
+        if (globals.currentWave === 1) {
+            if (globals.enemiesKilled*2 >= globals.maxEnemies) {
+                globals.currentWave++;
+                globals.enemiesKilled = 0;
+                globals.maxEnemies = 0;
+            }
+        } else if (globals.currentWave === 2) {
+            if (globals.maxEnemies === 0) {
+                globals.maxEnemies = 36;
+            }
+            if (globals.enemiesKilled*2 >= globals.maxEnemies) {
+                globals.currentWave++;
+                globals.enemiesKilled = 0;
+                globals.maxEnemies = 0;
+            }
+        } else if (globals.currentWave === 3) {
+            if (globals.maxEnemies === 0) {
+                globals.maxEnemies = 60;
+            }
+            if (globals.enemiesKilled*2 >= globals.maxEnemies) {
+                globals.currentWave++;
+                globals.enemiesKilled = 0;
+                globals.maxEnemies = 0;
+            }
+        } else if (globals.currentWave === 4) {
+            if (globals.maxEnemies === 0) {
+                globals.maxEnemies = 86;
+            }
+            if (globals.enemiesKilled*2 >= globals.maxEnemies) {
+                globals.currentWave++;
+                globals.enemiesKilled = 0;
+                globals.maxEnemies = 0;
+            }
+        } else if (globals.currentWave === 5) {
+            if (globals.maxEnemies === 0) {
+                globals.maxEnemies = 140;
+            }
+            if (globals.enemiesKilled*2 >= globals.maxEnemies) {
+                globals.currentWave++;
+                globals.enemiesKilled = 0;
+                globals.maxEnemies = 0;
+            }
+        } else if (globals.currentWave === 6) {
+            if (globals.maxEnemies === 0) {
+                globals.maxEnemies = 180;
+            }
+
+            if (globals.enemiesKilled*2 >= globals.maxEnemies) {
+                globals.currentWave++;
+                globals.enemiesKilled = 0;
+                globals.maxEnemies = 0;
+            }
+        } else if (globals.currentWave > 6) {
+            if (globals.maxEnemies === 0) {
+                globals.maxEnemies = globals.currentWave * 40;
+            }
+            if (globals.enemiesKilled*2 >= globals.maxEnemies) {
+                globals.currentWave++;
+                globals.enemiesKilled = 0;
+                globals.maxEnemies = 0;
+            }
+        }
+        
 
        //updates shuriken
        if (globals.updateShuriken) {
@@ -267,49 +659,49 @@ class Endless extends Phaser.Scene {
 
         //makes player walk
         if (this.cursors.down.isDown) {
-            this.player.play('walkDown', true);
-            this.player.setVelocityY(80*globals.speed);
-            this.player.setVelocityX(0);
+            globals.player.play('walkDown', true);
+            globals.player.setVelocityY(80*globals.speed);
+            globals.player.setVelocityX(0);
         } else if (this.cursors.up.isDown) {
-            this.player.setVelocityY(-80*globals.speed);
-            this.player.play('walkUp', true);
-            this.player.setVelocityX(0);
+            globals.player.setVelocityY(-80*globals.speed);
+            globals.player.play('walkUp', true);
+            globals.player.setVelocityX(0);
         } else if (this.cursors.left.isDown) {
-            this.player.setVelocityX(-80*globals.speed);
-            this.player.setVelocityY(0);
-            this.player.play('walkLeft', true);
+            globals.player.setVelocityX(-80*globals.speed);
+            globals.player.setVelocityY(0);
+            globals.player.play('walkLeft', true);
         } else if (this.cursors.right.isDown) {
-            this.player.setVelocityX(80*globals.speed);
-            this.player.setVelocityY(0);
-            this.player.play('walkRight', true);
+            globals.player.setVelocityX(80*globals.speed);
+            globals.player.setVelocityY(0);
+            globals.player.play('walkRight', true);
         }
         
         //player idle when not moving
         if (this.cursors.left.isUp) {
-            if (this.player.body.velocity.x < 0) {
-                this.player.setVelocityX(-0.001);
-                this.player.play('playerIdleLeft', true);
-                this.player.setTexture('player', 9);
+            if (globals.player.body.velocity.x < 0) {
+                globals.player.setVelocityX(-0.001);
+                globals.player.play('playerIdleLeft', true);
+                globals.player.setTexture('player', 9);
             }
         }
         if (this.cursors.right.isUp) {
-            if (this.player.body.velocity.x > 0) {
-                this.player.setVelocityX(0.001);
-                this.player.play('playerIdleRight', true);
-                this.player.setTexture('player', 27);
+            if (globals.player.body.velocity.x > 0) {
+                globals.player.setVelocityX(0.001);
+                globals.player.play('playerIdleRight', true);
+                globals.player.setTexture('player', 27);
             }
         }
         if (this.cursors.up.isUp) {
-            if (this.player.body.velocity.y < 0) {
-                this.player.setVelocityY(-0.001);
-                this.player.play('playerIdleUp', true);
-                this.player.setTexture('player', 1);
+            if (globals.player.body.velocity.y < 0) {
+                globals.player.setVelocityY(-0.001);
+                globals.player.play('playerIdleUp', true);
+                globals.player.setTexture('player', 1);
             }
         }
         if (this.cursors.down.isUp) {
-            if (this.player.body.velocity.y > 0) {
-                this.player.setVelocityY(0);
-                this.player.play('idle', true);
+            if (globals.player.body.velocity.y > 0) {
+                globals.player.setVelocityY(0);
+                globals.player.play('idle', true);
             }
         }
         
@@ -317,27 +709,27 @@ class Endless extends Phaser.Scene {
         for (let i = 0; i < globals.activeClothes.length; i++) {
             let clothes = globals.activeClothes[i]
             clothes.setVisible(true);
-            clothes.setVelocityX(this.player.body.velocity.x);
-            clothes.setVelocityY(this.player.body.velocity.y);
-            clothes.setX(this.player.x);
-            clothes.setY(this.player.y);
+            clothes.setVelocityX(globals.player.body.velocity.x);
+            clothes.setVelocityY(globals.player.body.velocity.y);
+            clothes.setX(globals.player.x);
+            clothes.setY(globals.player.y);
             let name = clothes.name;
-            if (this.player.anims.currentAnim) {
-                if (this.player.anims.currentAnim.key === 'walkRight') {
+            if (globals.player.anims.currentAnim) {
+                if (globals.player.anims.currentAnim.key === 'walkRight') {
                     clothes.play(`${name}Right`, true);
-                } else if (this.player.anims.currentAnim.key === 'walkLeft') {
+                } else if (globals.player.anims.currentAnim.key === 'walkLeft') {
                     clothes.play(`${name}Left`, true);
-                } else if (this.player.anims.currentAnim.key === 'walkDown') {
+                } else if (globals.player.anims.currentAnim.key === 'walkDown') {
                     clothes.play(`${name}Down`, true);
-                } else if (this.player.anims.currentAnim.key === 'walkUp') {
+                } else if (globals.player.anims.currentAnim.key === 'walkUp') {
                     clothes.play(`${name}Up`, true);
-                } else if (this.player.anims.currentAnim.key === 'playerIdleRight') {
+                } else if (globals.player.anims.currentAnim.key === 'playerIdleRight') {
                     clothes.play(`${name}IdleRight`, true);
-                } else if (this.player.anims.currentAnim.key === 'playerIdleLeft') {
+                } else if (globals.player.anims.currentAnim.key === 'playerIdleLeft') {
                     clothes.play(`${name}IdleLeft`, true);
-                } else if (this.player.anims.currentAnim.key === 'playerIdleUp') {
+                } else if (globals.player.anims.currentAnim.key === 'playerIdleUp') {
                     clothes.play(`${name}IdleUp`, true);
-                } else if (this.player.anims.currentAnim.key === 'playerHurt') {
+                } else if (globals.player.anims.currentAnim.key === 'playerHurt') {
                     clothes.play(`${name}Hurt`, true);
                 } else {
                     clothes.play(`${name}Idle`, true);
@@ -359,18 +751,18 @@ class Endless extends Phaser.Scene {
 
             if (globals.currentShuriken === 'black') {
                 if (this.shurikenBlack.getLength() < this.shurikenBlack.maxSize) {
-                    let newShuriken = this.shurikenBlack.create(this.player.body.x+4, this.player.body.y+14, 'shuriken', 0).setOrigin(0,0);
+                    let newShuriken = this.shurikenBlack.create(globals.player.body.x+4, globals.player.body.y+14, 'shuriken', 0).setOrigin(0,0);
                     this.shurikenBlackGUI.getLast(true).destroy();
-                    if (this.player.body.velocity.x > 0) {
+                    if (globals.player.body.velocity.x > 0) {
                         newShuriken.setVelocityX(150*globals.speed);
                         newShuriken.play('shuriken', true);
-                    } else if (this.player.body.velocity.x < 0) {
+                    } else if (globals.player.body.velocity.x < 0) {
                         newShuriken.setVelocityX(-150*globals.speed);
                         newShuriken.play('shuriken', true);
-                    } else if (this.player.body.velocity.y > 0) {
+                    } else if (globals.player.body.velocity.y > 0) {
                         newShuriken.setVelocityY(150*globals.speed);
                         newShuriken.play('shuriken', true);
-                    } else if (this.player.body.velocity.y < 0) {
+                    } else if (globals.player.body.velocity.y < 0) {
                         newShuriken.setVelocityY(-150*globals.speed);
                         newShuriken.play('shuriken', true);
                     } else {
@@ -380,18 +772,18 @@ class Endless extends Phaser.Scene {
                 }
             } else if (globals.currentShuriken === 'blue') {
                 if (this.shurikenBlue.getLength() < this.shurikenBlue.maxSize) {
-                    let newShuriken = this.shurikenBlue.create(this.player.body.x+4, this.player.body.y+14, 'shurikenBlue', 0).setOrigin(0,0);
+                    let newShuriken = this.shurikenBlue.create(globals.player.body.x+4, globals.player.body.y+14, 'shurikenBlue', 0).setOrigin(0,0);
                     this.shurikenBlueGUI.getLast(true).destroy();
-                    if (this.player.body.velocity.x > 0) {
+                    if (globals.player.body.velocity.x > 0) {
                         newShuriken.setVelocityX(200*globals.speed);
                         newShuriken.play('shurikenBlue', true);
-                    } else if (this.player.body.velocity.x < 0) {
+                    } else if (globals.player.body.velocity.x < 0) {
                         newShuriken.setVelocityX(-200*globals.speed);
                         newShuriken.play('shurikenBlue', true);
-                    } else if (this.player.body.velocity.y > 0) {
+                    } else if (globals.player.body.velocity.y > 0) {
                         newShuriken.setVelocityY(200*globals.speed);
                         newShuriken.play('shurikenBlue', true);
-                    } else if (this.player.body.velocity.y < 0) {
+                    } else if (globals.player.body.velocity.y < 0) {
                         newShuriken.setVelocityY(-200*globals.speed);
                         newShuriken.play('shurikenBlue', true);
                     } else {
@@ -409,16 +801,16 @@ class Endless extends Phaser.Scene {
             shuriken.body.setSize(12,12);
     
             shuriken.body.setCollideWorldBounds(false);
-            if (shuriken.y > (this.player.body.y + 350 )) {
+            if (shuriken.y > (globals.player.body.y + 350 )) {
                 shuriken.destroy();
                 this.shurikenBlackGUI.create(15*(this.shurikenBlack.maxSize-this.shurikenBlack.getLength()-1)+10, 80, 'shuriken').setScale(2.5).setScrollFactor(0).setOrigin(0,0);
-            } else if (shuriken.y < (this.player.body.y - 250)) {
+            } else if (shuriken.y < (globals.player.body.y - 250)) {
                 shuriken.destroy();
                 this.shurikenBlackGUI.create(15*(this.shurikenBlack.maxSize-this.shurikenBlack.getLength()-1)+10, 80, 'shuriken').setScale(2.5).setScrollFactor(0).setOrigin(0,0);
-            } else if (shuriken.x > (this.player.body.x + 350)) {
+            } else if (shuriken.x > (globals.player.body.x + 350)) {
                 shuriken.destroy();
                 this.shurikenBlackGUI.create(15*(this.shurikenBlack.maxSize-this.shurikenBlack.getLength()-1)+10, 80, 'shuriken').setScale(2.5).setScrollFactor(0).setOrigin(0,0);
-            } else if (shuriken.x < (this.player.body.x + -350)) {
+            } else if (shuriken.x < (globals.player.body.x + -350)) {
                 shuriken.destroy();
                 this.shurikenBlackGUI.create(15*(this.shurikenBlack.maxSize-this.shurikenBlack.getLength()-1)+10, 80, 'shuriken').setScale(2.5).setScrollFactor(0).setOrigin(0,0);
             }
@@ -428,19 +820,421 @@ class Endless extends Phaser.Scene {
             shuriken.body.setSize(12,12);
     
             shuriken.body.setCollideWorldBounds(false);
-            if (shuriken.y > (this.player.body.y + 350 )) {
+            if (shuriken.y > (globals.player.body.y + 350 )) {
                 shuriken.destroy();
                 this.shurikenBlueGUI.create(15*(this.shurikenBlue.maxSize-this.shurikenBlue.getLength()-1)+10, 110, 'shurikenBlue').setScale(2.5).setScrollFactor(0).setOrigin(0,0);
-            } else if (shuriken.y < (this.player.body.y - 250)) {
+            } else if (shuriken.y < (globals.player.body.y - 250)) {
                 shuriken.destroy();
                 this.shurikenBlueGUI.create(15*(this.shurikenBlue.maxSize-this.shurikenBlue.getLength()-1)+10, 110, 'shurikenBlue').setScale(2.5).setScrollFactor(0).setOrigin(0,0);
-            } else if (shuriken.x > (this.player.body.x + 350)) {
+            } else if (shuriken.x > (globals.player.body.x + 350)) {
                 shuriken.destroy();
                 this.shurikenBlueGUI.create(15*(this.shurikenBlue.maxSize-this.shurikenBlue.getLength()-1)+10, 110, 'shurikenBlue').setScale(2.5).setScrollFactor(0).setOrigin(0,0);
-            } else if (shuriken.x < (this.player.body.x + -350)) {
+            } else if (shuriken.x < (globals.player.body.x + -350)) {
                 shuriken.destroy();
                 this.shurikenBlueGUI.create(15*(this.shurikenBlue.maxSize-this.shurikenBlue.getLength()-1)+10, 110, 'shurikenBlue').setScale(2.5).setScrollFactor(0).setOrigin(0,0);
             }
         });
+
+        //skeleton mechanics
+        globals.skeletonsNormal.getChildren().forEach(skeleton => {
+    
+            skeleton.body.setSize(30,50);
+            skeleton.body.setOffset(17,15);
+            this.physics.moveToObject(skeleton, globals.player, 15);
+    
+            if (skeleton.body.velocity.x > 0) {
+                if (Math.abs(skeleton.body.velocity.x) > Math.abs(skeleton.body.velocity.y)) {
+                    skeleton.play('skeletonRight', true);
+                } else {
+                    if (skeleton.body.velocity.y > 0) {
+                        skeleton.play('skeletonDown', true);
+                    } else {
+                        skeleton.play('skeletonUp', true);
+                    }
+                }
+            } else if (skeleton.body.velocity.x < 0) {
+                if (Math.abs(skeleton.body.velocity.x) > Math.abs(skeleton.body.velocity.y)) {
+                    skeleton.play('skeletonLeft', true);
+                } else {
+                    if(skeleton.body.velocity.y > 0) {
+                        skeleton.play('skeletonDown', true);
+                    } else {
+                        skeleton.play('skeletonUp', true);
+                    }
+                }
+    
+            let randNum = Math.floor(Math.random() * 1000)
+            if (randNum === 1) {
+                if (Math.abs(skeleton.body.velocity.x) > Math.abs(skeleton.body.velocity.y)) {
+                    if (skeleton.body.velocity.x > 0) {
+                        const newFireBall = globals.skeletonAttack.create(skeleton.x, skeleton.y, 'fireball', 32).setScale(.3);
+                        newFireBall.setVelocityX(90);
+                        newFireBall.play('fireballRight', true);
+                    } else if (skeleton.body.velocity.x < 0) {
+                        const newFireBall = globals.skeletonAttack.create(skeleton.x, skeleton.y, 'fireball', 0).setScale(.3);
+                        newFireBall.setVelocityX(-90);
+                        newFireBall.play('fireballLeft', true);
+                    }
+                } else {
+                    if (skeleton.body.velocity.y > 0) {
+                        const newFireBall = globals.skeletonAttack.create(skeleton.x, skeleton.y, 'fireball', 32).setScale(.4);
+                        newFireBall.setVelocityY(90);
+                        newFireBall.play('fireballDown', true);
+                    } else if (skeleton.body.velocity.y < 0) {
+                        const newFireBall = globals.skeletonAttack.create(skeleton.x, skeleton.y, 'fireball', 0).setScale(.4);
+                        newFireBall.setVelocityY(-90);
+                        newFireBall.play('fireballUp', true);
+                    }
+                }
+            }
+        }
+        });
+
+        globals.skeletonsSmall.getChildren().forEach(skeleton => {
+    
+            skeleton.body.setSize(30,50);
+            skeleton.body.setOffset(17,15);
+            
+            this.physics.moveToObject(skeleton, globals.player, 40);
+    
+            if (skeleton.body.velocity.x > 0) {
+                if (Math.abs(skeleton.body.velocity.x) > Math.abs(skeleton.body.velocity.y)) {
+                    skeleton.play('skeletonHatRight', true);
+                } else {
+                    if (skeleton.body.velocity.y > 0) {
+                        skeleton.play('skeletonHatDown', true);
+                    } else {
+                        skeleton.play('skeletonHatUp', true);
+                    }
+                }
+            } else if (skeleton.body.velocity.x < 0) {
+                if (Math.abs(skeleton.body.velocity.x) > Math.abs(skeleton.body.velocity.y)) {
+                    skeleton.play('skeletonHatLeft', true);
+                } else {
+                    if(skeleton.body.velocity.y > 0) {
+                        skeleton.play('skeletonHatDown', true);
+                    } else {
+                        skeleton.play('skeletonHatUp', true);
+                    }
+                }
+            }
+        });
+
+        globals.skeletonsArmor.getChildren().forEach(skeleton => {
+    
+            skeleton.body.setSize(30,50);
+            skeleton.body.setOffset(17,15);
+            this.physics.moveToObject(skeleton, globals.player, 5);
+    
+            if (skeleton.body.velocity.x > 0) {
+                if (Math.abs(skeleton.body.velocity.x) > Math.abs(skeleton.body.velocity.y)) {
+                    skeleton.play('skeletonArmorRight', true);
+                } else {
+                    if (skeleton.body.velocity.y > 0) {
+                        skeleton.play('skeletonArmorDown', true);
+                    } else {
+                        skeleton.play('skeletonArmorUp', true);
+                    }
+                }
+            } else if (skeleton.body.velocity.x < 0) {
+                if (Math.abs(skeleton.body.velocity.x) > Math.abs(skeleton.body.velocity.y)) {
+                    skeleton.play('skeletonArmorLeft', true);
+                } else {
+                    if(skeleton.body.velocity.y > 0) {
+                        skeleton.play('skeletonArmorDown', true);
+                    } else {
+                        skeleton.play('skeletonArmorUp', true);
+                    }
+                }
+            }
+    
+            let randNum = Math.floor(Math.random() * 1000)
+            if (randNum === 1) {
+                if (Math.abs(skeleton.body.velocity.x) > Math.abs(skeleton.body.velocity.y)) {
+                    if (skeleton.body.velocity.x > 0) {
+                        const newFireBall = globals.skeletonAttack.create(skeleton.x, skeleton.y, 'fireball', 32).setScale(.6);
+                        newFireBall.setVelocityX(90);
+                        newFireBall.play('fireballRight', true);
+                    } else if (skeleton.body.velocity.x < 0) {
+                        const newFireBall = globals.skeletonAttack.create(skeleton.x, skeleton.y, 'fireball', 0).setScale(.6);
+                        newFireBall.setVelocityX(-90);
+                        newFireBall.play('fireballLeft', true);
+                    }
+                } else {
+                    if (skeleton.body.velocity.y > 0) {
+                        const newFireBall = globals.skeletonAttack.create(skeleton.x, skeleton.y, 'fireball', 32).setScale(.7);
+                        newFireBall.setVelocityY(90);
+                        newFireBall.play('fireballDown', true);
+                    } else if (skeleton.body.velocity.y < 0) {
+                        const newFireBall = globals.skeletonAttack.create(skeleton.x, skeleton.y, 'fireball', 0).setScale(.7);
+                        newFireBall.setVelocityY(-90);
+                        newFireBall.play('fireballUp', true);
+                    } 
+                }
+            }
+        });
+
+        globals.skeletonAttack.getChildren().forEach(fireball => {
+            if (fireball.body.velocity.x > 0) {
+                fireball.body.setSize(58, 20);
+                fireball.body.setOffset(0,20);
+            } else {
+                fireball.body.setSize(20, 58);
+                fireball.body.setOffset(20,5);
+            }
+        });
+
+        //heartManagement
+        if (this.lives === 15) {
+            globals.GUIHearts.setTexture('hearts', 0);
+            globals.GUIHearts.setY(470);
+            this.extraHeart1.setTexture('extraHeart', 0);
+            this.extraHeart2.setTexture('extraHeart', 0);
+            this.extraHeart3.setTexture('extraHeart', 0);
+            this.extraHeart4.setTexture('extraHeart', 0);
+            this.extraHeart5.setTexture('extraHeart', 0);
+            this.extraHeart6.setTexture('extraHeart', 0);
+            this.extraHeart7.setTexture('extraHeart', 0);
+            this.extraHeart8.setTexture('extraHeart', 0);
+            this.extraHeart9.setTexture('extraHeart', 0);
+            this.extraHeart10.setTexture('extraHeart', 0);
+            this.extraHeart11.setTexture('extraHeart', 0);
+            this.extraHeart12.setTexture('extraHeart', 0);
+        } else if (this.lives === 14) {
+            globals.GUIHearts.setTexture('hearts', 0);
+            globals.GUIHearts.setY(470);
+            this.extraHeart1.setTexture('extraHeart', 0);
+            this.extraHeart2.setTexture('extraHeart', 0);
+            this.extraHeart3.setTexture('extraHeart', 0);
+            this.extraHeart4.setTexture('extraHeart', 0);
+            this.extraHeart5.setTexture('extraHeart', 0);
+            this.extraHeart6.setTexture('extraHeart', 0);
+            this.extraHeart7.setTexture('extraHeart', 0);
+            this.extraHeart8.setTexture('extraHeart', 0);
+            this.extraHeart9.setTexture('extraHeart', 0);
+            this.extraHeart10.setTexture('extraHeart', 0);
+            this.extraHeart11.setTexture('extraHeart', 0);
+            this.extraHeart12.setTexture('extraHeart', 1);
+        } else if (this.lives === 13) {
+            globals.GUIHearts.setTexture('hearts', 0);
+            globals.GUIHearts.setY(470);
+            this.extraHeart1.setTexture('extraHeart', 0);
+            this.extraHeart2.setTexture('extraHeart', 0);
+            this.extraHeart3.setTexture('extraHeart', 0);
+            this.extraHeart4.setTexture('extraHeart', 0);
+            this.extraHeart5.setTexture('extraHeart', 0);
+            this.extraHeart6.setTexture('extraHeart', 0);
+            this.extraHeart7.setTexture('extraHeart', 0);
+            this.extraHeart8.setTexture('extraHeart', 0);
+            this.extraHeart9.setTexture('extraHeart', 0);
+            this.extraHeart10.setTexture('extraHeart', 0);
+            this.extraHeart11.setTexture('extraHeart', 1);
+            this.extraHeart12.setTexture('extraHeart', 1);
+        } else if (this.lives === 12) {
+            globals.GUIHearts.setTexture('hearts', 0);
+            globals.GUIHearts.setY(470);
+            this.extraHeart1.setTexture('extraHeart', 0);
+            this.extraHeart2.setTexture('extraHeart', 0);
+            this.extraHeart3.setTexture('extraHeart', 0);
+            this.extraHeart4.setTexture('extraHeart', 0);
+            this.extraHeart5.setTexture('extraHeart', 0);
+            this.extraHeart6.setTexture('extraHeart', 0);
+            this.extraHeart7.setTexture('extraHeart', 0);
+            this.extraHeart8.setTexture('extraHeart', 0);
+            this.extraHeart9.setTexture('extraHeart', 0);
+            this.extraHeart10.setTexture('extraHeart', 1);
+            this.extraHeart11.setTexture('extraHeart', 1);
+            this.extraHeart12.setTexture('extraHeart', 1);
+        } else if (this.lives === 11) {
+            globals.GUIHearts.setTexture('hearts', 0);
+            globals.GUIHearts.setY(470);
+            this.extraHeart1.setTexture('extraHeart', 0);
+            this.extraHeart2.setTexture('extraHeart', 0);
+            this.extraHeart3.setTexture('extraHeart', 0);
+            this.extraHeart4.setTexture('extraHeart', 0);
+            this.extraHeart5.setTexture('extraHeart', 0);
+            this.extraHeart6.setTexture('extraHeart', 0);
+            this.extraHeart7.setTexture('extraHeart', 0);
+            this.extraHeart8.setTexture('extraHeart', 0);
+            this.extraHeart9.setTexture('extraHeart', 1);
+            this.extraHeart10.setTexture('extraHeart', 1);
+            this.extraHeart11.setTexture('extraHeart', 1);
+            this.extraHeart12.setTexture('extraHeart', 1);
+        } else if (this.lives === 10) {
+            globals.GUIHearts.setTexture('hearts', 0);
+            globals.GUIHearts.setY(470);
+            this.extraHeart1.setTexture('extraHeart', 0);
+            this.extraHeart2.setTexture('extraHeart', 0);
+            this.extraHeart3.setTexture('extraHeart', 0);
+            this.extraHeart4.setTexture('extraHeart', 0);
+            this.extraHeart5.setTexture('extraHeart', 0);
+            this.extraHeart6.setTexture('extraHeart', 0);
+            this.extraHeart7.setTexture('extraHeart', 0);
+            this.extraHeart8.setTexture('extraHeart', 1);
+            this.extraHeart9.setTexture('extraHeart', 1);
+            this.extraHeart10.setTexture('extraHeart', 1);
+            this.extraHeart11.setTexture('extraHeart', 1);
+            this.extraHeart12.setTexture('extraHeart', 1);
+        } else if (this.lives === 9) {
+            globals.GUIHearts.setTexture('hearts', 0);
+            globals.GUIHearts.setY(470);
+            this.extraHeart1.setTexture('extraHeart', 0);
+            this.extraHeart2.setTexture('extraHeart', 0);
+            this.extraHeart3.setTexture('extraHeart', 0);
+            this.extraHeart4.setTexture('extraHeart', 0);
+            this.extraHeart5.setTexture('extraHeart', 0);
+            this.extraHeart6.setTexture('extraHeart', 0);
+            this.extraHeart7.setTexture('extraHeart', 1);
+            this.extraHeart8.setTexture('extraHeart', 1);
+            this.extraHeart9.setTexture('extraHeart', 1);
+            this.extraHeart10.setTexture('extraHeart', 1);
+            this.extraHeart11.setTexture('extraHeart', 1);
+            this.extraHeart12.setTexture('extraHeart', 1);
+        } else if (this.lives === 8) {
+            globals.GUIHearts.setTexture('hearts', 0);
+            globals.GUIHearts.setY(470);
+            this.extraHeart1.setTexture('extraHeart', 0);
+            this.extraHeart2.setTexture('extraHeart', 0);
+            this.extraHeart3.setTexture('extraHeart', 0);
+            this.extraHeart4.setTexture('extraHeart', 0);
+            this.extraHeart5.setTexture('extraHeart', 0);
+            this.extraHeart6.setTexture('extraHeart', 1);
+            this.extraHeart7.setTexture('extraHeart', 1);
+            this.extraHeart8.setTexture('extraHeart', 1);
+            this.extraHeart9.setTexture('extraHeart', 1);
+            this.extraHeart10.setTexture('extraHeart', 1);
+            this.extraHeart11.setTexture('extraHeart', 1);
+            this.extraHeart12.setTexture('extraHeart', 1);
+        } else if (this.lives === 7) {
+            globals.GUIHearts.setTexture('hearts', 0);
+            globals.GUIHearts.setY(470);
+            this.extraHeart1.setTexture('extraHeart', 0);
+            this.extraHeart2.setTexture('extraHeart', 0);
+            this.extraHeart3.setTexture('extraHeart', 0);
+            this.extraHeart4.setTexture('extraHeart', 0);
+            this.extraHeart5.setTexture('extraHeart', 1);
+            this.extraHeart6.setTexture('extraHeart', 1);
+            this.extraHeart7.setTexture('extraHeart', 1);
+            this.extraHeart8.setTexture('extraHeart', 1);
+            this.extraHeart9.setTexture('extraHeart', 1);
+            this.extraHeart10.setTexture('extraHeart', 1);
+            this.extraHeart11.setTexture('extraHeart', 1);
+            this.extraHeart12.setTexture('extraHeart', 1);
+        } else if (this.lives === 6) {
+            globals.GUIHearts.setTexture('hearts', 0);
+            globals.GUIHearts.setY(470);
+            this.extraHeart1.setTexture('extraHeart', 0);
+            this.extraHeart2.setTexture('extraHeart', 0);
+            this.extraHeart3.setTexture('extraHeart', 0);
+            this.extraHeart4.setTexture('extraHeart', 1);
+            this.extraHeart5.setTexture('extraHeart', 1);
+            this.extraHeart6.setTexture('extraHeart', 1);
+            this.extraHeart7.setTexture('extraHeart', 1);
+            this.extraHeart8.setTexture('extraHeart', 1);
+            this.extraHeart9.setTexture('extraHeart', 1);
+            this.extraHeart10.setTexture('extraHeart', 1);
+            this.extraHeart11.setTexture('extraHeart', 1);
+            this.extraHeart12.setTexture('extraHeart', 1);
+        } else if (this.lives === 5) {
+            globals.GUIHearts.setTexture('hearts', 0);
+            globals.GUIHearts.setY(470);
+            this.extraHeart1.setTexture('extraHeart', 0);
+            this.extraHeart2.setTexture('extraHeart', 0);
+            this.extraHeart3.setTexture('extraHeart', 1);
+            this.extraHeart4.setTexture('extraHeart', 1);
+            this.extraHeart5.setTexture('extraHeart', 1);
+            this.extraHeart6.setTexture('extraHeart', 1);
+            this.extraHeart7.setTexture('extraHeart', 1);
+            this.extraHeart8.setTexture('extraHeart', 1);
+            this.extraHeart9.setTexture('extraHeart', 1);
+            this.extraHeart10.setTexture('extraHeart', 1);
+            this.extraHeart11.setTexture('extraHeart', 1);
+            this.extraHeart12.setTexture('extraHeart', 1);
+        } else if (this.lives === 4) {
+            globals.GUIHearts.setTexture('hearts', 0);
+            globals.GUIHearts.setY(470);
+            this.extraHeart1.setTexture('extraHeart', 0);
+            this.extraHeart2.setTexture('extraHeart', 1);
+            this.extraHeart3.setTexture('extraHeart', 1);
+            this.extraHeart4.setTexture('extraHeart', 1);
+            this.extraHeart5.setTexture('extraHeart', 1);
+            this.extraHeart6.setTexture('extraHeart', 1);
+            this.extraHeart7.setTexture('extraHeart', 1);
+            this.extraHeart8.setTexture('extraHeart', 1);
+            this.extraHeart9.setTexture('extraHeart', 1);
+            this.extraHeart10.setTexture('extraHeart', 1);
+            this.extraHeart11.setTexture('extraHeart', 1);
+            this.extraHeart12.setTexture('extraHeart', 1);
+        } else if (this.lives === 3) {
+            globals.GUIHearts.setTexture('hearts', 0);
+            globals.GUIHearts.setY(470);
+            this.extraHeart1.setTexture('extraHeart', 1);
+            this.extraHeart2.setTexture('extraHeart', 1);
+            this.extraHeart3.setTexture('extraHeart', 1);
+            this.extraHeart4.setTexture('extraHeart', 1);
+            this.extraHeart5.setTexture('extraHeart', 1);
+            this.extraHeart6.setTexture('extraHeart', 1);
+            this.extraHeart7.setTexture('extraHeart', 1);
+            this.extraHeart8.setTexture('extraHeart', 1);
+            this.extraHeart9.setTexture('extraHeart', 1);
+            this.extraHeart10.setTexture('extraHeart', 1);
+            this.extraHeart11.setTexture('extraHeart', 1);
+            this.extraHeart12.setTexture('extraHeart', 1);
+        } else if (this.lives === 2) {
+            globals.GUIHearts.setTexture('hearts', 1);
+            globals.GUIHearts.setY(471);
+            this.extraHeart1.setTexture('extraHeart', 1);
+            this.extraHeart2.setTexture('extraHeart', 1);
+            this.extraHeart3.setTexture('extraHeart', 1);
+            this.extraHeart4.setTexture('extraHeart', 1);
+            this.extraHeart5.setTexture('extraHeart', 1);
+            this.extraHeart6.setTexture('extraHeart', 1);
+            this.extraHeart7.setTexture('extraHeart', 1);
+            this.extraHeart8.setTexture('extraHeart', 1);
+            this.extraHeart9.setTexture('extraHeart', 1);
+            this.extraHeart10.setTexture('extraHeart', 1);
+            this.extraHeart11.setTexture('extraHeart', 1);
+            this.extraHeart12.setTexture('extraHeart', 1);
+        } else if (this.lives === 1) {
+            globals.GUIHearts.setTexture('hearts', 2);
+            globals.GUIHearts.setY(472);
+            this.extraHeart1.setTexture('extraHeart', 1);
+            this.extraHeart2.setTexture('extraHeart', 1);
+            this.extraHeart3.setTexture('extraHeart', 1);
+            this.extraHeart4.setTexture('extraHeart', 1);
+            this.extraHeart5.setTexture('extraHeart', 1);
+            this.extraHeart6.setTexture('extraHeart', 1);
+            this.extraHeart7.setTexture('extraHeart', 1);
+            this.extraHeart8.setTexture('extraHeart', 1);
+            this.extraHeart9.setTexture('extraHeart', 1);
+            this.extraHeart10.setTexture('extraHeart', 1);
+            this.extraHeart11.setTexture('extraHeart', 1);
+            this.extraHeart12.setTexture('extraHeart', 1);
+        } else if (this.lives === 0) {
+            const levelDialog = this.add.image(globals.player.body.x, globals.player.body.y -70, 'dialog').setScale(.6);
+            const levelText = this.add.text(globals.player.body.x -100, globals.player.body.y -85, 'Game Over!', { fontSize: '18px', fill: '#00000', fontWeight: '700', fontFamily: 'Arial Black', textAlign: 'center' });
+            const levelText2 = this.add.text(globals.player.body.x -110, globals.player.body.y -65, 'reload webpage to restart.', { fontSize: '10px', fill: '#00000', fontWeight: '700', fontFamily: 'Arial Black', textAlign: 'center' });
+            globals.GUIHearts.setTexture('hearts', 3);
+            globals.GUIHearts.setY(472);
+            this.extraHeart1.setTexture('extraHeart', 1);
+            this.extraHeart2.setTexture('extraHeart', 1);
+            this.extraHeart3.setTexture('extraHeart', 1);
+            this.extraHeart4.setTexture('extraHeart', 1);
+            this.extraHeart5.setTexture('extraHeart', 1);
+            this.extraHeart6.setTexture('extraHeart', 1);
+            this.extraHeart7.setTexture('extraHeart', 1);
+            this.extraHeart8.setTexture('extraHeart', 1);
+            this.extraHeart9.setTexture('extraHeart', 1);
+            this.extraHeart10.setTexture('extraHeart', 1);
+            this.extraHeart11.setTexture('extraHeart', 1);
+            this.extraHeart12.setTexture('extraHeart', 1);
+            this.physics.pause();
+            this.normalSkeletonLoop.destroy();
+            this.armorSkeletonLoop.destroy();
+            this.smallSkeletonLoop.destroy();
+            this.scoreTextEvent.destroy();
+            globals.player.play('playerHurt', true);
+        }
+        
     }   
 }
