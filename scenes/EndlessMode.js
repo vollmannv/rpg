@@ -86,7 +86,7 @@ class Endless extends Phaser.Scene {
         this.physics.world.setBounds(0,0,1500,1500);
 
         //GUI
-        globals.GUIHearts = this.add.sprite(70, 470, 'hearts', 0).setScrollFactor(0);
+        this.GUIHearts = this.add.sprite(70, 470, 'hearts', 0).setScrollFactor(0);
         globals.GUICoins = this.add.sprite(10, 10, 'coin').setOrigin(0,0).setScale(1.7).setScrollFactor(0);
         globals.GUIGems = this.add.sprite(10, 45, 'gem').setOrigin(0,0).setScale(1.7).setScrollFactor(0);
         updateMoney(this);
@@ -986,8 +986,8 @@ class Endless extends Phaser.Scene {
 
         //heartManagement
         if (this.lives === 15) {
-            globals.GUIHearts.setTexture('hearts', 0);
-            globals.GUIHearts.setY(470);
+            this.GUIHearts.setTexture('hearts', 0);
+            this.GUIHearts.setY(470);
             this.extraHeart1.setTexture('extraHeart', 0);
             this.extraHeart2.setTexture('extraHeart', 0);
             this.extraHeart3.setTexture('extraHeart', 0);
@@ -1001,8 +1001,8 @@ class Endless extends Phaser.Scene {
             this.extraHeart11.setTexture('extraHeart', 0);
             this.extraHeart12.setTexture('extraHeart', 0);
         } else if (this.lives === 14) {
-            globals.GUIHearts.setTexture('hearts', 0);
-            globals.GUIHearts.setY(470);
+            this.GUIHearts.setTexture('hearts', 0);
+            this.GUIHearts.setY(470);
             this.extraHeart1.setTexture('extraHeart', 0);
             this.extraHeart2.setTexture('extraHeart', 0);
             this.extraHeart3.setTexture('extraHeart', 0);
@@ -1016,8 +1016,8 @@ class Endless extends Phaser.Scene {
             this.extraHeart11.setTexture('extraHeart', 0);
             this.extraHeart12.setTexture('extraHeart', 1);
         } else if (this.lives === 13) {
-            globals.GUIHearts.setTexture('hearts', 0);
-            globals.GUIHearts.setY(470);
+            this.GUIHearts.setTexture('hearts', 0);
+            this.GUIHearts.setY(470);
             this.extraHeart1.setTexture('extraHeart', 0);
             this.extraHeart2.setTexture('extraHeart', 0);
             this.extraHeart3.setTexture('extraHeart', 0);
@@ -1031,8 +1031,8 @@ class Endless extends Phaser.Scene {
             this.extraHeart11.setTexture('extraHeart', 1);
             this.extraHeart12.setTexture('extraHeart', 1);
         } else if (this.lives === 12) {
-            globals.GUIHearts.setTexture('hearts', 0);
-            globals.GUIHearts.setY(470);
+            this.GUIHearts.setTexture('hearts', 0);
+            this.GUIHearts.setY(470);
             this.extraHeart1.setTexture('extraHeart', 0);
             this.extraHeart2.setTexture('extraHeart', 0);
             this.extraHeart3.setTexture('extraHeart', 0);
@@ -1046,8 +1046,8 @@ class Endless extends Phaser.Scene {
             this.extraHeart11.setTexture('extraHeart', 1);
             this.extraHeart12.setTexture('extraHeart', 1);
         } else if (this.lives === 11) {
-            globals.GUIHearts.setTexture('hearts', 0);
-            globals.GUIHearts.setY(470);
+            this.GUIHearts.setTexture('hearts', 0);
+            this.GUIHearts.setY(470);
             this.extraHeart1.setTexture('extraHeart', 0);
             this.extraHeart2.setTexture('extraHeart', 0);
             this.extraHeart3.setTexture('extraHeart', 0);
@@ -1061,8 +1061,8 @@ class Endless extends Phaser.Scene {
             this.extraHeart11.setTexture('extraHeart', 1);
             this.extraHeart12.setTexture('extraHeart', 1);
         } else if (this.lives === 10) {
-            globals.GUIHearts.setTexture('hearts', 0);
-            globals.GUIHearts.setY(470);
+            this.GUIHearts.setTexture('hearts', 0);
+            this.GUIHearts.setY(470);
             this.extraHeart1.setTexture('extraHeart', 0);
             this.extraHeart2.setTexture('extraHeart', 0);
             this.extraHeart3.setTexture('extraHeart', 0);
@@ -1076,8 +1076,8 @@ class Endless extends Phaser.Scene {
             this.extraHeart11.setTexture('extraHeart', 1);
             this.extraHeart12.setTexture('extraHeart', 1);
         } else if (this.lives === 9) {
-            globals.GUIHearts.setTexture('hearts', 0);
-            globals.GUIHearts.setY(470);
+            this.GUIHearts.setTexture('hearts', 0);
+            this.GUIHearts.setY(470);
             this.extraHeart1.setTexture('extraHeart', 0);
             this.extraHeart2.setTexture('extraHeart', 0);
             this.extraHeart3.setTexture('extraHeart', 0);
@@ -1091,8 +1091,8 @@ class Endless extends Phaser.Scene {
             this.extraHeart11.setTexture('extraHeart', 1);
             this.extraHeart12.setTexture('extraHeart', 1);
         } else if (this.lives === 8) {
-            globals.GUIHearts.setTexture('hearts', 0);
-            globals.GUIHearts.setY(470);
+            this.GUIHearts.setTexture('hearts', 0);
+            this.GUIHearts.setY(470);
             this.extraHeart1.setTexture('extraHeart', 0);
             this.extraHeart2.setTexture('extraHeart', 0);
             this.extraHeart3.setTexture('extraHeart', 0);
@@ -1106,8 +1106,8 @@ class Endless extends Phaser.Scene {
             this.extraHeart11.setTexture('extraHeart', 1);
             this.extraHeart12.setTexture('extraHeart', 1);
         } else if (this.lives === 7) {
-            globals.GUIHearts.setTexture('hearts', 0);
-            globals.GUIHearts.setY(470);
+            this.GUIHearts.setTexture('hearts', 0);
+            this.GUIHearts.setY(470);
             this.extraHeart1.setTexture('extraHeart', 0);
             this.extraHeart2.setTexture('extraHeart', 0);
             this.extraHeart3.setTexture('extraHeart', 0);
@@ -1121,8 +1121,8 @@ class Endless extends Phaser.Scene {
             this.extraHeart11.setTexture('extraHeart', 1);
             this.extraHeart12.setTexture('extraHeart', 1);
         } else if (this.lives === 6) {
-            globals.GUIHearts.setTexture('hearts', 0);
-            globals.GUIHearts.setY(470);
+            this.GUIHearts.setTexture('hearts', 0);
+            this.GUIHearts.setY(470);
             this.extraHeart1.setTexture('extraHeart', 0);
             this.extraHeart2.setTexture('extraHeart', 0);
             this.extraHeart3.setTexture('extraHeart', 0);
@@ -1136,8 +1136,8 @@ class Endless extends Phaser.Scene {
             this.extraHeart11.setTexture('extraHeart', 1);
             this.extraHeart12.setTexture('extraHeart', 1);
         } else if (this.lives === 5) {
-            globals.GUIHearts.setTexture('hearts', 0);
-            globals.GUIHearts.setY(470);
+            this.GUIHearts.setTexture('hearts', 0);
+            this.GUIHearts.setY(470);
             this.extraHeart1.setTexture('extraHeart', 0);
             this.extraHeart2.setTexture('extraHeart', 0);
             this.extraHeart3.setTexture('extraHeart', 1);
@@ -1151,8 +1151,8 @@ class Endless extends Phaser.Scene {
             this.extraHeart11.setTexture('extraHeart', 1);
             this.extraHeart12.setTexture('extraHeart', 1);
         } else if (this.lives === 4) {
-            globals.GUIHearts.setTexture('hearts', 0);
-            globals.GUIHearts.setY(470);
+            this.GUIHearts.setTexture('hearts', 0);
+            this.GUIHearts.setY(470);
             this.extraHeart1.setTexture('extraHeart', 0);
             this.extraHeart2.setTexture('extraHeart', 1);
             this.extraHeart3.setTexture('extraHeart', 1);
@@ -1166,8 +1166,8 @@ class Endless extends Phaser.Scene {
             this.extraHeart11.setTexture('extraHeart', 1);
             this.extraHeart12.setTexture('extraHeart', 1);
         } else if (this.lives === 3) {
-            globals.GUIHearts.setTexture('hearts', 0);
-            globals.GUIHearts.setY(470);
+            this.GUIHearts.setTexture('hearts', 0);
+            this.GUIHearts.setY(470);
             this.extraHeart1.setTexture('extraHeart', 1);
             this.extraHeart2.setTexture('extraHeart', 1);
             this.extraHeart3.setTexture('extraHeart', 1);
@@ -1181,8 +1181,8 @@ class Endless extends Phaser.Scene {
             this.extraHeart11.setTexture('extraHeart', 1);
             this.extraHeart12.setTexture('extraHeart', 1);
         } else if (this.lives === 2) {
-            globals.GUIHearts.setTexture('hearts', 1);
-            globals.GUIHearts.setY(471);
+            this.GUIHearts.setTexture('hearts', 1);
+            this.GUIHearts.setY(471);
             this.extraHeart1.setTexture('extraHeart', 1);
             this.extraHeart2.setTexture('extraHeart', 1);
             this.extraHeart3.setTexture('extraHeart', 1);
@@ -1196,8 +1196,8 @@ class Endless extends Phaser.Scene {
             this.extraHeart11.setTexture('extraHeart', 1);
             this.extraHeart12.setTexture('extraHeart', 1);
         } else if (this.lives === 1) {
-            globals.GUIHearts.setTexture('hearts', 2);
-            globals.GUIHearts.setY(472);
+            this.GUIHearts.setTexture('hearts', 2);
+            this.GUIHearts.setY(472);
             this.extraHeart1.setTexture('extraHeart', 1);
             this.extraHeart2.setTexture('extraHeart', 1);
             this.extraHeart3.setTexture('extraHeart', 1);
@@ -1214,8 +1214,8 @@ class Endless extends Phaser.Scene {
             const levelDialog = this.add.image(globals.player.body.x, globals.player.body.y -70, 'dialog').setScale(.6);
             const levelText = this.add.text(globals.player.body.x -100, globals.player.body.y -85, 'Game Over!', { fontSize: '18px', fill: '#00000', fontWeight: '700', fontFamily: 'Arial Black', textAlign: 'center' });
             const levelText2 = this.add.text(globals.player.body.x -110, globals.player.body.y -65, 'reload webpage to restart.', { fontSize: '10px', fill: '#00000', fontWeight: '700', fontFamily: 'Arial Black', textAlign: 'center' });
-            globals.GUIHearts.setTexture('hearts', 3);
-            globals.GUIHearts.setY(472);
+            this.GUIHearts.setTexture('hearts', 3);
+            this.GUIHearts.setY(472);
             this.extraHeart1.setTexture('extraHeart', 1);
             this.extraHeart2.setTexture('extraHeart', 1);
             this.extraHeart3.setTexture('extraHeart', 1);
